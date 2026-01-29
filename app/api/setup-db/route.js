@@ -8,7 +8,7 @@ export async function POST(request) {
     // Check for a secret to prevent unauthorized access
     const { secret } = await request.json();
     
-    if (secret !== 'deliveron-setup-2024') {
+    if (secret !== process.env.SETUP_SECRET) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
