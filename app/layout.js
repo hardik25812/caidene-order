@@ -1,16 +1,19 @@
-import './globals.css'
+import './globals.css';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Next.js MongoDB Template',
-  description: 'A simple template with App Router, MongoDB, and shadcn/ui',
-}
+  title: 'Deliveron - Order Management',
+  description: 'Order and manage your Deliveron email infrastructure subscriptions',
+};
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} min-h-screen bg-black`}>
         {children}
       </body>
     </html>
-  )
+  );
 }
