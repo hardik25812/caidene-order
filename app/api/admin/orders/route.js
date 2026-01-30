@@ -5,41 +5,53 @@ export async function GET() {
   try {
     const supabase = createServerClient();
 
-    // Fetch all orders with subscription data
+    // Fetch all orders
     const { data: orders, error: ordersError } = await supabase
       .from('orders')
-      .select(`
-        *,
-        subscriptions (
-          stripe_customer_id,
-          stripe_subscription_id,
-          plan_name,
-          inbox_count,
-          status as sub_status
-        ),
-        users (
-          email
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (ordersError) {
       console.error('Error fetching orders:', ordersError);
+      return NextResponse.json({ orders: [], stats: { awaiting: 0, completed: 0, totalInvoices: 0, totalInboxes: 0 } });
     }
 
+    // Fetch all subscriptions
+    const { data: subscriptions } = await supabase
+      .from('subscriptions')
+      .select('*');
+
+    // Fetch all users
+    const { data: users } = await supabase
+      .from('users')
+      .select('*');
+
+    // Create lookup maps
+    const subsMap = {};
+    (subscriptions || []).forEach(s => { subsMap[s.id] = s; });
+    
+    const usersMap = {};
+    (users || []).forEach(u => { usersMap[u.id] = u; });
+
     // Transform data to flat structure
-    const transformedOrders = (orders || []).map(order => ({
-      id: order.id,
-      user_id: order.user_id,
-      subscription_id: order.subscription_id,
-      status: order.status,
-      created_at: order.created_at,
-      email: order.users?.email || 'Unknown',
-      stripe_customer_id: order.subscriptions?.stripe_customer_id,
-      stripe_subscription_id: order.subscriptions?.stripe_subscription_id,
-      plan_name: order.subscriptions?.plan_name || 'Growth',
-      inbox_count: order.subscriptions?.inbox_count || 1
-    }));
+    const transformedOrders = (orders || []).map(order => {
+      const subscription = subsMap[order.subscription_id] || {};
+      const user = usersMap[order.user_id] || {};
+      
+      return {
+        id: order.id,
+        user_id: order.user_id,
+        subscription_id: order.subscription_id,
+        status: order.status,
+        created_at: order.created_at,
+        updated_at: order.updated_at,
+        email: user.email || 'Unknown',
+        stripe_customer_id: subscription.stripe_customer_id,
+        stripe_subscription_id: subscription.stripe_subscription_id,
+        plan_name: subscription.plan_name || 'Growth',
+        inbox_count: subscription.inbox_count || 1
+      };
+    });
 
     // Calculate stats
     const awaiting = transformedOrders.filter(o => o.status === 'pending').length;
