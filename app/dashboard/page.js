@@ -5,16 +5,16 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mail, CreditCard, Calendar, Inbox, LogOut, ExternalLink, Loader2 } from 'lucide-react';
+import { Mail, CreditCard, Calendar, Inbox, LogOut, ExternalLink, Loader2, Copy, Check, Globe, Server, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [subscription, setSubscription] = useState(null);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [portalLoading, setPortalLoading] = useState(false);
+  const [copiedNs, setCopiedNs] = useState(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -27,15 +27,15 @@ export default function DashboardPage() {
 
       setUser(session.user);
 
-      // Fetch subscription data
+      // Fetch orders data
       try {
-        const response = await fetch(`/api/subscription?user_id=${session.user.id}`);
+        const response = await fetch(`/api/customer/orders?email=${encodeURIComponent(session.user.email)}`);
         const data = await response.json();
-        if (data.subscription) {
-          setSubscription(data.subscription);
+        if (data.orders) {
+          setOrders(data.orders);
         }
       } catch (err) {
-        console.error('Error fetching subscription:', err);
+        console.error('Error fetching orders:', err);
       }
 
       setLoading(false);
@@ -60,43 +60,34 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
-  const handleManageBilling = async () => {
-    if (!subscription?.stripe_customer_id) return;
-
-    setPortalLoading(true);
+  const copyToClipboard = async (text, id) => {
     try {
-      const response = await fetch('/api/billing-portal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          customerId: subscription.stripe_customer_id,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      await navigator.clipboard.writeText(text);
+      setCopiedNs(id);
+      setTimeout(() => setCopiedNs(null), 2000);
     } catch (err) {
-      console.error('Error accessing billing portal:', err);
-    } finally {
-      setPortalLoading(false);
+      console.error('Failed to copy:', err);
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getFulfillmentStatusBadge = (status) => {
     const statusConfig = {
-      active: { label: 'Active', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
-      canceled: { label: 'Canceled', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
-      past_due: { label: 'Past Due', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-      trialing: { label: 'Trial', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-      incomplete: { label: 'Incomplete', className: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
+      pending: { label: 'Pending', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', icon: Clock },
+      processing: { label: 'Processing', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30', icon: Loader2 },
+      completed: { label: 'Completed', className: 'bg-green-500/20 text-green-400 border-green-500/30', icon: CheckCircle2 },
+      partial: { label: 'Partial', className: 'bg-orange-500/20 text-orange-400 border-orange-500/30', icon: AlertCircle },
+      failed: { label: 'Failed', className: 'bg-red-500/20 text-red-400 border-red-500/30', icon: AlertCircle },
+      queued: { label: 'Queued', className: 'bg-purple-500/20 text-purple-400 border-purple-500/30', icon: Clock },
     };
 
-    const config = statusConfig[status] || { label: status, className: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30' };
-    return <Badge variant="outline" className={config.className}>{config.label}</Badge>;
+    const config = statusConfig[status] || { label: status || 'Unknown', className: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30', icon: Clock };
+    const Icon = config.icon;
+    return (
+      <Badge variant="outline" className={`${config.className} flex items-center gap-1`}>
+        <Icon className="w-3 h-3" />
+        {config.label}
+      </Badge>
+    );
   };
 
   if (loading) {
@@ -134,138 +125,210 @@ export default function DashboardPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-          <p className="text-zinc-400 mt-1">Manage your subscription and account</p>
+          <p className="text-zinc-400 mt-1">View your orders and DNS configuration</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Account Info */}
-          <Card className="bg-zinc-900 border-zinc-800">
-            <CardHeader>
-              <CardTitle className="text-lg text-white flex items-center gap-2">
-                <Mail className="w-5 h-5 text-purple-400" />
-                Account
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-zinc-500">Email</p>
-                  <p className="text-white">{user?.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-zinc-500">Account ID</p>
-                  <p className="text-zinc-400 text-sm font-mono">{user?.id?.slice(0, 8)}...</p>
-                </div>
+        {/* Account Info */}
+        <Card className="bg-zinc-900 border-zinc-800 mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg text-white flex items-center gap-2">
+              <Mail className="w-5 h-5 text-purple-400" />
+              Account
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-6">
+              <div>
+                <p className="text-sm text-zinc-500">Email</p>
+                <p className="text-white">{user?.email}</p>
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <p className="text-sm text-zinc-500">Total Orders</p>
+                <p className="text-white">{orders.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Subscription Info */}
-          <Card className="bg-zinc-900 border-zinc-800">
-            <CardHeader>
-              <CardTitle className="text-lg text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-purple-400" />
-                Subscription
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {subscription ? (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">Status</span>
-                    {getStatusBadge(subscription.status)}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">Plan</span>
-                    <span className="text-white">{subscription.plan_name || 'Growth'}</span>
-                  </div>
-                  {subscription.current_period_end && (
+        {/* Orders Section */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Your Orders</h2>
+          
+          {orders.length === 0 ? (
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardContent className="py-12 text-center">
+                <Inbox className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
+                <p className="text-zinc-400 mb-4">No orders yet</p>
+                <Link href="/order">
+                  <Button className="bg-purple-600 hover:bg-purple-700">
+                    Place Your First Order
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {orders.map((order) => (
+                <Card key={order.id} className="bg-zinc-900 border-zinc-800">
+                  <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-500">Renews</span>
-                      <span className="text-white">
-                        {new Date(subscription.current_period_end).toLocaleDateString()}
+                      <div className="flex items-center gap-3">
+                        <CardTitle className="text-lg text-white">
+                          Order #{order.id?.slice(0, 8)}
+                        </CardTitle>
+                        {getFulfillmentStatusBadge(order.fulfillment_status)}
+                      </div>
+                      <span className="text-zinc-500 text-sm">
+                        {new Date(order.created_at).toLocaleDateString()}
                       </span>
                     </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-zinc-400">No active subscription</p>
-                  <Link href="/order">
-                    <Button className="mt-4 bg-purple-600 hover:bg-purple-700">
-                      Get Started
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    <CardDescription className="text-zinc-400">
+                      {order.domain_count} domain(s) • ${order.total_amount}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Domains List */}
+                    {order.domains && order.domains.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-zinc-500">Domains</p>
+                        <div className="flex flex-wrap gap-2">
+                          {order.domains.map((d, i) => (
+                            <Badge key={i} variant="outline" className="border-zinc-700 text-zinc-300">
+                              <Globe className="w-3 h-3 mr-1" />
+                              {d.domain}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-          {/* Inbox Info */}
-          {subscription && (
-            <Card className="bg-zinc-900 border-zinc-800">
-              <CardHeader>
-                <CardTitle className="text-lg text-white flex items-center gap-2">
-                  <Inbox className="w-5 h-5 text-purple-400" />
-                  Infrastructure
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">Domains</span>
-                    <span className="text-white">{subscription.inbox_count || 1}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">Total Inboxes</span>
-                    <span className="text-white">{(subscription.inbox_count || 1) * 100}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">Monthly Emails</span>
-                    <span className="text-white">{((subscription.inbox_count || 1) * 15000).toLocaleString()}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                    {/* Nameservers Section */}
+                    {order.nameservers && order.nameservers.length > 0 && (
+                      <div className="bg-zinc-800/50 rounded-xl p-4 space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Server className="w-5 h-5 text-purple-400" />
+                          <h4 className="text-white font-medium">DNS Configuration Required</h4>
+                        </div>
+                        <p className="text-zinc-400 text-sm">
+                          Update your domain's nameservers to the values below. This is required to complete your inbox setup.
+                        </p>
+                        
+                        {order.nameservers.map((ns, nsIndex) => (
+                          <div key={nsIndex} className="bg-zinc-900 rounded-lg p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-purple-400 font-medium">{ns.domain}</span>
+                            </div>
+                            
+                            {Array.isArray(ns.nameservers) ? (
+                              <div className="space-y-2">
+                                {ns.nameservers.map((nameserver, i) => (
+                                  <div key={i} className="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
+                                    <code className="text-green-400 font-mono text-sm">{nameserver}</code>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => copyToClipboard(nameserver, `${order.id}-${nsIndex}-${i}`)}
+                                      className="text-zinc-400 hover:text-white"
+                                    >
+                                      {copiedNs === `${order.id}-${nsIndex}-${i}` ? (
+                                        <Check className="w-4 h-4 text-green-400" />
+                                      ) : (
+                                        <Copy className="w-4 h-4" />
+                                      )}
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-between bg-zinc-800 rounded-lg px-4 py-3">
+                                <code className="text-green-400 font-mono text-sm">{JSON.stringify(ns.nameservers)}</code>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => copyToClipboard(JSON.stringify(ns.nameservers), `${order.id}-${nsIndex}`)}
+                                  className="text-zinc-400 hover:text-white"
+                                >
+                                  {copiedNs === `${order.id}-${nsIndex}` ? (
+                                    <Check className="w-4 h-4 text-green-400" />
+                                  ) : (
+                                    <Copy className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            )}
 
-          {/* Billing Management */}
-          {subscription && subscription.stripe_customer_id && (
-            <Card className="bg-zinc-900 border-zinc-800">
-              <CardHeader>
-                <CardTitle className="text-lg text-white flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-purple-400" />
-                  Billing
-                </CardTitle>
-                <CardDescription className="text-zinc-400">
-                  Manage your payment method, view invoices, and update subscription
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  onClick={handleManageBilling}
-                  disabled={portalLoading}
-                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                >
-                  {portalLoading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                  )}
-                  Manage Billing
-                </Button>
-              </CardContent>
-            </Card>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const allNs = Array.isArray(ns.nameservers) 
+                                  ? ns.nameservers.join('\n') 
+                                  : JSON.stringify(ns.nameservers);
+                                copyToClipboard(allNs, `${order.id}-${nsIndex}-all`);
+                              }}
+                              className="w-full border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800"
+                            >
+                              {copiedNs === `${order.id}-${nsIndex}-all` ? (
+                                <>
+                                  <Check className="w-4 h-4 mr-2 text-green-400" />
+                                  Copied All!
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-4 h-4 mr-2" />
+                                  Copy All Nameservers
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        ))}
+
+                        <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
+                          <p className="text-purple-300 text-sm">
+                            <strong>How to update nameservers:</strong> Log into your domain registrar (GoDaddy, Namecheap, Porkbun, etc.), 
+                            find DNS settings, and replace the existing nameservers with the ones above.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Pending nameservers message */}
+                    {order.fulfillment_status === 'pending' || order.fulfillment_status === 'processing' ? (
+                      <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-5 h-5 text-yellow-400" />
+                          <p className="text-yellow-300 text-sm">
+                            Your order is being processed. Nameserver information will appear here once ready.
+                          </p>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Error message */}
+                    {order.fulfillment_error && (
+                      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-5 h-5 text-red-400" />
+                          <p className="text-red-300 text-sm">
+                            {order.fulfillment_error}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
 
         {/* Help Section */}
-        <Card className="mt-6 bg-zinc-900 border-zinc-800">
+        <Card className="bg-zinc-900 border-zinc-800">
           <CardContent className="py-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <h3 className="text-white font-medium">Need help?</h3>
-                <p className="text-zinc-400 text-sm">Our team is available 24/7 via WhatsApp</p>
+                <h3 className="text-white font-medium">Need help with DNS setup?</h3>
+                <p className="text-zinc-400 text-sm">Our team is available 24/7 via WhatsApp to help you configure your domains</p>
               </div>
               <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800">
                 Contact Support

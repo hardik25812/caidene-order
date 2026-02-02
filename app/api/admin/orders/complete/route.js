@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase';
 
 export async function POST(request) {
   try {
-    const { orderId } = await request.json();
+    const { orderId, nameservers } = await request.json();
 
     if (!orderId) {
       return NextResponse.json(
@@ -14,13 +14,22 @@ export async function POST(request) {
 
     const supabase = createServerClient();
 
-    // Update order status to fulfilled
+    // Build update object
+    const updateData = { 
+      status: 'paid',
+      fulfillment_status: 'completed',
+      updated_at: new Date().toISOString()
+    };
+
+    // If nameservers provided, add them
+    if (nameservers) {
+      updateData.nameservers = nameservers;
+    }
+
+    // Update order status to completed
     const { error } = await supabase
       .from('orders')
-      .update({ 
-        status: 'fulfilled',
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', orderId);
 
     if (error) {
