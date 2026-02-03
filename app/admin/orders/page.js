@@ -15,8 +15,19 @@ import {
   Mail,
   RefreshCw,
   User,
-  DollarSign
+  DollarSign,
+  Upload,
+  Download,
+  Package,
+  AlertCircle,
+  XCircle,
+  Copy,
+  ExternalLink,
+  Server,
+  Globe,
+  RotateCcw
 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 
 export default function OrdersManagement() {
@@ -25,9 +36,21 @@ export default function OrdersManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  
+  // Inventory state
+  const [activeTab, setActiveTab] = useState('orders'); // 'orders' or 'inventory'
+  const [inventory, setInventory] = useState([]);
+  const [inventoryStats, setInventoryStats] = useState(null);
+  const [inventoryLoading, setInventoryLoading] = useState(false);
+  const [csvText, setCsvText] = useState('');
+  const [uploadMessage, setUploadMessage] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const [copySuccess, setCopySuccess] = useState('');
 
   useEffect(() => {
     fetchOrders();
+    fetchInventory();
   }, []);
 
   const fetchOrders = async () => {
@@ -87,6 +110,128 @@ export default function OrdersManagement() {
     }
   };
 
+  const handleRetryFulfillment = async (orderId) => {
+    setRetrying(true);
+    try {
+      const response = await fetch('/api/admin/orders/retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchOrders();
+      } else {
+        console.error('Retry failed:', data.error);
+      }
+    } catch (err) {
+      console.error('Error retrying fulfillment:', err);
+    } finally {
+      setRetrying(false);
+    }
+  };
+
+  const copyToClipboard = async (text, label) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(label);
+      setTimeout(() => setCopySuccess(''), 2000);
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+  };
+
+  const getFulfillmentStatusBadge = (status) => {
+    const config = {
+      completed: { label: 'Completed', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
+      partial: { label: 'Partial', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+      failed: { label: 'Failed', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
+      pending: { label: 'Pending', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+      processing: { label: 'Processing', className: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
+      queued: { label: 'Queued', className: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+    };
+    const { label, className } = config[status] || config.pending;
+    return <Badge variant="outline" className={className}>{label}</Badge>;
+  };
+
+  // Inventory functions
+  const fetchInventory = async () => {
+    setInventoryLoading(true);
+    try {
+      const response = await fetch('/api/admin/inventory');
+      const data = await response.json();
+      setInventory(data.inventory || []);
+      setInventoryStats(data.stats);
+    } catch (err) {
+      console.error('Error fetching inventory:', err);
+    } finally {
+      setInventoryLoading(false);
+    }
+  };
+
+  const handleCsvUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target.result;
+      setCsvText(text);
+      await processCSV(text);
+    };
+    reader.readAsText(file);
+  };
+
+  const processCSV = async (csvContent) => {
+    setUploading(true);
+    setUploadMessage('');
+    try {
+      const lines = csvContent.split('\n').filter(line => line.trim());
+      const accounts = [];
+      const startIndex = lines[0].toLowerCase().includes('email') ? 1 : 0;
+      for (let i = startIndex; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        const [email, password, notes] = line.split(',').map(s => s.trim());
+        if (email && password) {
+          accounts.push({ email, password, notes: notes || '' });
+        }
+      }
+      if (accounts.length === 0) {
+        setUploadMessage('No valid accounts found in CSV');
+        setUploading(false);
+        return;
+      }
+      const response = await fetch('/api/admin/inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accounts }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setUploadMessage(`✅ Added ${data.added} accounts!`);
+        setCsvText('');
+        fetchInventory();
+      } else {
+        setUploadMessage(`❌ Error: ${data.error}`);
+      }
+    } catch (error) {
+      setUploadMessage(`❌ Error: ${error.message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const config = {
+      available: { label: 'Available', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
+      reserved: { label: 'Reserved', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+      assigned: { label: 'Assigned', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+      depleted: { label: 'Depleted', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
+    };
+    const { label, className } = config[status] || config.available;
+    return <Badge variant="outline" className={className}>{label}</Badge>;
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0e1a]">
       {/* Header */}
@@ -100,11 +245,22 @@ export default function OrdersManagement() {
           </div>
           <nav className="flex items-center gap-6">
             <Link href="/admin" className="text-gray-400 hover:text-white">Dashboard</Link>
-            <Link href="/admin/orders" className="text-white font-medium">Orders</Link>
+            <button 
+              onClick={() => setActiveTab('orders')}
+              className={activeTab === 'orders' ? 'text-white font-medium' : 'text-gray-400 hover:text-white'}
+            >
+              Orders
+            </button>
+            <button 
+              onClick={() => setActiveTab('inventory')}
+              className={activeTab === 'inventory' ? 'text-white font-medium flex items-center gap-1' : 'text-gray-400 hover:text-white flex items-center gap-1'}
+            >
+              <Package className="w-4 h-4" /> Inventory
+              {inventoryStats?.isLow && <span className="w-2 h-2 bg-red-500 rounded-full"></span>}
+            </button>
             <Link href="/admin/pricing" className="text-gray-400 hover:text-white flex items-center gap-1">
               <DollarSign className="w-4 h-4" /> Pricing
             </Link>
-            <Link href="/order" className="text-gray-400 hover:text-white">Leads</Link>
             <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-gray-300" />
             </div>
@@ -116,12 +272,16 @@ export default function OrdersManagement() {
         {/* Page Title & Actions */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-white">Orders Management</h1>
-            <p className="text-gray-500">View and manage all customer orders</p>
+            <h1 className="text-2xl font-bold text-white">
+              {activeTab === 'orders' ? 'Orders Management' : 'Inventory Management'}
+            </h1>
+            <p className="text-gray-500">
+              {activeTab === 'orders' ? 'View and manage all customer orders' : 'Manage Microsoft 365 accounts'}
+            </p>
           </div>
           <Button 
             variant="outline" 
-            onClick={fetchOrders}
+            onClick={activeTab === 'orders' ? fetchOrders : fetchInventory}
             className="border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -129,51 +289,54 @@ export default function OrdersManagement() {
           </Button>
         </div>
 
-        {/* Filters */}
-        <div className="flex gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-            <Input
-              placeholder="Search by order ID, email, domain..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 py-5 bg-[#111827] border-[#1f2937] text-white placeholder:text-gray-500"
-            />
+        {/* Filters - Only show for Orders tab */}
+        {activeTab === 'orders' && (
+          <div className="flex gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Input
+                placeholder="Search by order ID, email, domain..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 py-5 bg-[#111827] border-[#1f2937] text-white placeholder:text-gray-500"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant={statusFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => setStatusFilter('all')}
+                className={statusFilter === 'all' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
+              >
+                All Orders
+              </Button>
+              <Button
+                variant={statusFilter === 'pending' ? 'default' : 'outline'}
+                onClick={() => setStatusFilter('pending')}
+                className={statusFilter === 'pending' 
+                  ? 'bg-yellow-600 text-white' 
+                  : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
+              >
+                <Clock className="w-4 h-4 mr-2" />
+                Awaiting
+              </Button>
+              <Button
+                variant={statusFilter === 'fulfilled' ? 'default' : 'outline'}
+                onClick={() => setStatusFilter('fulfilled')}
+                className={statusFilter === 'fulfilled' 
+                  ? 'bg-green-600 text-white' 
+                  : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
+              >
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                Completed
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant={statusFilter === 'all' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('all')}
-              className={statusFilter === 'all' 
-                ? 'bg-blue-600 text-white' 
-                : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
-            >
-              All Orders
-            </Button>
-            <Button
-              variant={statusFilter === 'pending' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('pending')}
-              className={statusFilter === 'pending' 
-                ? 'bg-yellow-600 text-white' 
-                : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
-            >
-              <Clock className="w-4 h-4 mr-2" />
-              Awaiting
-            </Button>
-            <Button
-              variant={statusFilter === 'fulfilled' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('fulfilled')}
-              className={statusFilter === 'fulfilled' 
-                ? 'bg-green-600 text-white' 
-                : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
-            >
-              <CheckCircle2 className="w-4 h-4 mr-2" />
-              Completed
-            </Button>
-          </div>
-        </div>
+        )}
 
         {/* Main Content */}
+        {activeTab === 'orders' ? (
         <div className="grid grid-cols-3 gap-6">
           {/* Orders List */}
           <div className="col-span-2">
@@ -232,8 +395,10 @@ export default function OrdersManagement() {
                         </div>
                         <div className="text-right flex items-center gap-4">
                           <div>
-                            <p className="text-white font-semibold">{(order.inbox_count || 1) * 100} Inboxes</p>
-                            <p className="text-gray-500 text-xs">${(order.inbox_count || 1) * 49}/mo</p>
+                            <p className="text-white font-semibold">{order.domain_count || order.domains?.length || 0} Domain{(order.domain_count || order.domains?.length || 0) !== 1 ? 's' : ''}</p>
+                            {order.total_amount > 0 && (
+                              <p className="text-gray-500 text-xs">${(order.total_amount / 100).toFixed(2)}</p>
+                            )}
                           </div>
                           <ChevronRight className="w-5 h-5 text-gray-500" />
                         </div>
@@ -262,22 +427,22 @@ export default function OrdersManagement() {
                           <span className="text-gray-400">Email</span>
                           <span className="text-white text-sm">{selectedOrder.email}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Plan</span>
-                          <span className="text-white">{selectedOrder.plan_name || 'Growth'}</span>
-                        </div>
+                        {selectedOrder.phone && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Phone</span>
+                            <span className="text-white text-sm">{selectedOrder.phone}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between">
                           <span className="text-gray-400">Domains</span>
-                          <span className="text-white">{selectedOrder.inbox_count || 1}</span>
+                          <span className="text-white">{selectedOrder.domain_count || selectedOrder.domains?.length || 0}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Total Inboxes</span>
-                          <span className="text-white font-semibold">{(selectedOrder.inbox_count || 1) * 100}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Monthly Value</span>
-                          <span className="text-green-400 font-semibold">${(selectedOrder.inbox_count || 1) * 49}</span>
-                        </div>
+                        {selectedOrder.total_amount > 0 && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Amount Paid</span>
+                            <span className="text-green-400 font-semibold">${(selectedOrder.total_amount / 100).toFixed(2)}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between">
                           <span className="text-gray-400">Status</span>
                           <Badge 
@@ -295,6 +460,158 @@ export default function OrdersManagement() {
                       </div>
                     </div>
 
+                    {/* Domains List */}
+                    {selectedOrder.domains?.length > 0 && (
+                      <div className="pt-4 border-t border-[#1f2937]">
+                        <h4 className="text-sm font-medium text-gray-400 mb-3">Domains</h4>
+                        <div className="space-y-2">
+                          {selectedOrder.domains.map((domain, idx) => {
+                            const domainName = typeof domain === 'string' ? domain : domain?.domain;
+                            const forwardingUrl = typeof domain === 'object' ? domain?.forwardingUrl : null;
+                            return (
+                              <div key={idx} className="bg-[#0a0e1a] p-2 rounded">
+                                <code className="text-sm text-blue-400">{domainName}</code>
+                                {forwardingUrl && (
+                                  <div className="text-xs text-gray-500 mt-1">→ {forwardingUrl}</div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Fulfillment Status */}
+                    <div className="pt-4 border-t border-[#1f2937]">
+                      <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                        <Server className="w-4 h-4" /> Fulfillment Status
+                      </h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Status</span>
+                          {getFulfillmentStatusBadge(selectedOrder.fulfillment_status)}
+                        </div>
+                        {selectedOrder.fulfillment_error && (
+                          <div className="p-2 bg-red-500/10 border border-red-500/30 rounded text-xs text-red-400">
+                            {selectedOrder.fulfillment_error}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Nameservers Section */}
+                    {selectedOrder.nameservers?.length > 0 && (() => {
+                      // Extract all unique nameserver strings from the nested structure
+                      const allNameservers = [];
+                      selectedOrder.nameservers.forEach(ns => {
+                        if (typeof ns === 'string') {
+                          allNameservers.push(ns);
+                        } else if (ns?.nameservers && Array.isArray(ns.nameservers)) {
+                          // Handle {domain, nameservers: [...], dns_verified} structure
+                          ns.nameservers.forEach(innerNs => {
+                            if (typeof innerNs === 'string' && !allNameservers.includes(innerNs)) {
+                              allNameservers.push(innerNs);
+                            }
+                          });
+                        } else if (ns?.nameserver) {
+                          allNameservers.push(ns.nameserver);
+                        }
+                      });
+                      
+                      if (allNameservers.length === 0) return null;
+                      
+                      return (
+                        <div className="pt-4 border-t border-[#1f2937]">
+                          <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                            <Globe className="w-4 h-4" /> Nameservers
+                          </h4>
+                          <div className="space-y-2">
+                            {allNameservers.map((ns, idx) => (
+                              <div key={idx} className="flex items-center justify-between bg-[#0a0e1a] p-2 rounded">
+                                <code className="text-sm text-blue-400">{ns}</code>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full mt-2 border-[#1f2937] text-gray-300 hover:text-white"
+                              onClick={() => copyToClipboard(allNameservers.join('\n'), 'nameservers')}
+                            >
+                              <Copy className="w-3 h-3 mr-2" />
+                              {copySuccess === 'nameservers' ? 'Copied!' : 'Copy Nameservers'}
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Fulfillment Results - Domain Mapping */}
+                    {selectedOrder.fulfillment_results?.length > 0 && (
+                      <div className="pt-4 border-t border-[#1f2937]">
+                        <h4 className="text-sm font-medium text-gray-400 mb-3">Domain Fulfillment</h4>
+                        <div className="space-y-3">
+                          {selectedOrder.fulfillment_results.map((result, idx) => (
+                            <div key={idx} className="bg-[#0a0e1a] p-3 rounded-lg space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-white font-medium text-sm">{result.domain}</span>
+                                <Badge 
+                                  variant="outline"
+                                  className={result.status === 'completed' 
+                                    ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+                                    : 'bg-red-500/20 text-red-400 border-red-500/30'}
+                                >
+                                  {result.status}
+                                </Badge>
+                              </div>
+                              {result.msAccountEmail && (
+                                <div className="flex items-center gap-2 text-xs">
+                                  <span className="text-gray-500">MS Account:</span>
+                                  <code className="text-blue-400">{result.msAccountEmail}</code>
+                                  <button 
+                                    onClick={() => copyToClipboard(result.msAccountEmail, `ms-${idx}`)}
+                                    className="text-gray-500 hover:text-white"
+                                  >
+                                    <Copy className="w-3 h-3" />
+                                  </button>
+                                  {copySuccess === `ms-${idx}` && <span className="text-green-400 text-xs">Copied!</span>}
+                                </div>
+                              )}
+                              {result.plugsaasOrderId && (
+                                <div className="flex items-center gap-2 text-xs">
+                                  <span className="text-gray-500">Scalesends ID:</span>
+                                  <code className="text-purple-400">{result.plugsaasOrderId}</code>
+                                  <a 
+                                    href={`https://cloud.infra.email/#/orders/${result.plugsaasOrderId}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-500 hover:text-white"
+                                  >
+                                    <ExternalLink className="w-3 h-3" />
+                                  </a>
+                                </div>
+                              )}
+                              {result.dns_status && (
+                                <div className="flex items-center gap-2 text-xs">
+                                  <span className="text-gray-500">DNS:</span>
+                                  <Badge 
+                                    variant="outline" 
+                                    className={result.dns_status === 'verified' 
+                                      ? 'bg-green-500/20 text-green-400 border-green-500/30 text-xs' 
+                                      : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs'}
+                                  >
+                                    {result.dns_status === 'verified' ? 'Verified' : 'Pending'}
+                                  </Badge>
+                                </div>
+                              )}
+                              {result.error && (
+                                <div className="text-xs text-red-400 mt-1">{result.error}</div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {selectedOrder.stripe_customer_id && (
                       <div className="pt-4 border-t border-[#1f2937]">
                         <h4 className="text-sm font-medium text-gray-400 mb-2">Stripe Info</h4>
@@ -305,17 +622,31 @@ export default function OrdersManagement() {
                       </div>
                     )}
 
-                    {selectedOrder.status === 'pending' && (
-                      <Button 
-                        className="w-full bg-green-600 hover:bg-green-700 text-white"
-                        onClick={() => handleMarkComplete(selectedOrder.id)}
-                      >
-                        <CheckCircle2 className="w-4 h-4 mr-2" />
-                        Mark as Completed
-                      </Button>
-                    )}
+                    {/* Action Buttons */}
+                    <div className="pt-4 border-t border-[#1f2937] space-y-2">
+                      {(selectedOrder.fulfillment_status === 'failed' || selectedOrder.fulfillment_status === 'partial') && (
+                        <Button 
+                          className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                          onClick={() => handleRetryFulfillment(selectedOrder.id)}
+                          disabled={retrying}
+                        >
+                          <RotateCcw className={`w-4 h-4 mr-2 ${retrying ? 'animate-spin' : ''}`} />
+                          {retrying ? 'Retrying...' : 'Retry Fulfillment'}
+                        </Button>
+                      )}
 
-                    {selectedOrder.status === 'fulfilled' && (
+                      {selectedOrder.status === 'pending' && (
+                        <Button 
+                          className="w-full bg-green-600 hover:bg-green-700 text-white"
+                          onClick={() => handleMarkComplete(selectedOrder.id)}
+                        >
+                          <CheckCircle2 className="w-4 h-4 mr-2" />
+                          Mark as Completed
+                        </Button>
+                      )}
+                    </div>
+
+                    {selectedOrder.fulfillment_status === 'completed' && (
                       <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
                         <div className="flex items-center gap-2 text-green-400">
                           <CheckCircle2 className="w-4 h-4" />
@@ -335,6 +666,164 @@ export default function OrdersManagement() {
             )}
           </div>
         </div>
+        ) : (
+          /* Inventory Tab Content */
+          <div className="space-y-6">
+            {/* Inventory Stats */}
+            {inventoryStats && (
+              <div className="grid grid-cols-5 gap-4">
+                <Card className="bg-[#111827] border-[#1f2937]">
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-white">{inventoryStats.total}</div>
+                    <div className="text-sm text-gray-400">Total</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-[#111827] border-[#1f2937]">
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-green-400">{inventoryStats.available}</div>
+                    <div className="text-sm text-gray-400">Available</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-[#111827] border-[#1f2937]">
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-yellow-400">{inventoryStats.reserved}</div>
+                    <div className="text-sm text-gray-400">Reserved</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-[#111827] border-[#1f2937]">
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-blue-400">{inventoryStats.assigned}</div>
+                    <div className="text-sm text-gray-400">Assigned</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-[#111827] border-[#1f2937]">
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-red-400">{inventoryStats.depleted}</div>
+                    <div className="text-sm text-gray-400">Depleted</div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* Low Inventory Alert */}
+            {inventoryStats?.isLow && (
+              <Card className="bg-yellow-500/10 border-yellow-500/30">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-400" />
+                  <div>
+                    <p className="text-yellow-300 font-medium">Low Inventory Warning</p>
+                    <p className="text-yellow-400/80 text-sm">Only {inventoryStats.available} accounts available</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* CSV Upload Section */}
+            <Card className="bg-[#111827] border-[#1f2937]">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Upload className="w-5 h-5 text-blue-400" />
+                  Add Microsoft 365 Accounts
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      type="file"
+                      accept=".csv"
+                      onChange={handleCsvUpload}
+                      disabled={uploading}
+                      className="bg-[#0a0e1a] border-[#1f2937] text-white"
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const template = 'email,password,notes\naccount1@outlook.com,password123,\naccount2@outlook.com,password456,';
+                        const blob = new Blob([template], { type: 'text/csv' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'inventory-template.csv';
+                        a.click();
+                      }}
+                      className="border-[#1f2937] text-gray-300 hover:text-white whitespace-nowrap"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Template
+                    </Button>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400 mb-2">Or paste CSV data:</p>
+                    <Textarea
+                      value={csvText}
+                      onChange={(e) => setCsvText(e.target.value)}
+                      placeholder="email,password,notes&#10;account@outlook.com,password123,"
+                      className="bg-[#0a0e1a] border-[#1f2937] text-white font-mono text-sm"
+                      rows={4}
+                      disabled={uploading}
+                    />
+                    <Button
+                      onClick={() => processCSV(csvText)}
+                      disabled={uploading || !csvText.trim()}
+                      className="mt-2 bg-blue-600 hover:bg-blue-700"
+                    >
+                      {uploading ? 'Processing...' : 'Add Accounts'}
+                    </Button>
+                  </div>
+                  {uploadMessage && (
+                    <div className={`p-3 rounded-lg text-sm ${uploadMessage.includes('✅') ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                      {uploadMessage}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Inventory Table */}
+            <Card className="bg-[#111827] border-[#1f2937]">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Inventory ({inventory.length})</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-[#1f2937]">
+                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Email</th>
+                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
+                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Customer</th>
+                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Domain</th>
+                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Assigned</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {inventoryLoading ? (
+                        <tr>
+                          <td colSpan="5" className="text-center py-8 text-gray-500">Loading...</td>
+                        </tr>
+                      ) : inventory.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="text-center py-8 text-gray-500">No inventory. Upload CSV to add accounts.</td>
+                        </tr>
+                      ) : (
+                        inventory.map((item) => (
+                          <tr key={item.id} className="border-b border-[#1f2937]/50 hover:bg-[#1f2937]/30">
+                            <td className="py-3 px-4">
+                              <code className="text-sm text-blue-400">{item.email}</code>
+                            </td>
+                            <td className="py-3 px-4">{getStatusBadge(item.status)}</td>
+                            <td className="py-3 px-4 text-sm text-gray-300">{item.customer_email || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-300">{item.domain || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-400">
+                              {item.assigned_date ? new Date(item.assigned_date).toLocaleDateString() : '-'}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

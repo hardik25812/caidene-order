@@ -3,7 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { createServerClient } from '@/lib/supabase';
 import { headers } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
-import { sheetsInventory } from '@/lib/google-sheets';
+import { supabaseInventory } from '@/lib/supabase-inventory';
 import { plugsaas } from '@/lib/plugsaas';
 
 // Retry configuration
@@ -229,7 +229,7 @@ export async function POST(request) {
  * 
  * On failure: Release reserved accounts, mark order as failed
  */
-async function processAutomatedFulfillment(supabase, orderId, orderData, customerEmail) {
+export async function processAutomatedFulfillment(supabase, orderId, orderData, customerEmail) {
   console.log(`Starting automated fulfillment for order ${orderId}`);
 
   const domains = orderData?.domains || [];
@@ -255,7 +255,7 @@ async function processAutomatedFulfillment(supabase, orderId, orderData, custome
     try {
       // Step 1: Get available Microsoft account from inventory (with retry)
       const availableAccounts = await withRetry(
-        () => sheetsInventory.getAvailableAccounts(1),
+        () => supabaseInventory.getAvailableAccounts(1),
         'Get available accounts'
       );
       
@@ -279,7 +279,7 @@ async function processAutomatedFulfillment(supabase, orderId, orderData, custome
 
       // Step 2: Reserve the account (with retry)
       await withRetry(
-        () => sheetsInventory.reserveAccounts([msAccount], orderId),
+        () => supabaseInventory.reserveAccounts([msAccount], orderId),
         'Reserve account'
       );
       reservedAccounts.push({ account: msAccount, domain: domainEntry.domain });
@@ -291,37 +291,68 @@ async function processAutomatedFulfillment(supabase, orderId, orderData, custome
       let plugsaasOrderId = null;
       let nameservers = null;
 
-      try {
-        const plugsaasOrder = await withRetry(
-          () => plugsaas.addOrder({
-            domain: domainEntry.domain,
-            forwarding_url: domainEntry.forwardingUrl,
-            names: namesForApi,
-            microsoft_email: msAccount.email,
-            microsoft_password: msAccount.password,
-          }),
-          'PlugSaaS addOrder'
-        );
-
-        plugsaasOrderId = plugsaasOrder.order_id || plugsaasOrder.id;
-
-        // Step 4: Get nameservers (with retry)
-        if (plugsaasOrderId) {
-          const nsResponse = await withRetry(
-            () => plugsaas.getNameservers(plugsaasOrderId),
-            'PlugSaaS getNameservers'
+      // Check if mock mode is enabled
+      const mockMode = process.env.PLUGSAAS_MOCK_MODE === 'true';
+      
+      if (mockMode) {
+        // Mock mode: Generate fake order ID and nameservers for testing
+        console.log('MOCK MODE: Simulating PlugSaaS API for domain:', domainEntry.domain);
+        plugsaasOrderId = `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        nameservers = ['ns1.infra.email', 'ns2.infra.email'];
+        console.log('MOCK MODE: Generated order ID:', plugsaasOrderId);
+        console.log('MOCK MODE: Nameservers:', nameservers);
+      } else {
+        try {
+          // Extract tenant name from MS account email (e.g., "admin@TenantName.onmicrosoft.com" -> "TenantName")
+          const tenantName = msAccount.email.split('@')[1]?.split('.')[0] || 'Tenant';
+          
+          // Step 3: Create order with domain AND MS tenant credentials in one call
+          // API requires: domain, provider, name, email, password
+          console.log('Creating PlugSaaS order for domain:', domainEntry.domain);
+          console.log('Using MS tenant:', msAccount.email);
+          
+          const plugsaasOrder = await withRetry(
+            () => plugsaas.addOrder({
+              domain: domainEntry.domain,
+              provider: 'outlook',
+              name: tenantName,
+              email: msAccount.email,
+              password: msAccount.password,
+            }),
+            'PlugSaaS addOrder'
           );
-          nameservers = nsResponse.nameservers || nsResponse;
+
+          // Extract order ID from response
+          plugsaasOrderId = plugsaasOrder?.data?._id || plugsaasOrder?.data?.id || 
+                           plugsaasOrder?.order_id || plugsaasOrder?.id || plugsaasOrder?._id;
+          console.log('PlugSaaS order created:', plugsaasOrderId);
+
+          // Step 4: Get nameservers (with retry)
+          if (plugsaasOrderId) {
+            try {
+              const nsResponse = await withRetry(
+                () => plugsaas.getNameservers(plugsaasOrderId),
+                'PlugSaaS getNameservers'
+              );
+              nameservers = nsResponse?.nameservers || nsResponse?.data?.nameservers || 
+                           (Array.isArray(nsResponse) ? nsResponse : null);
+              console.log('Nameservers retrieved:', nameservers);
+            } catch (nsError) {
+              console.log('Nameservers not yet available (order may need DNS setup first):', nsError.message);
+              // Nameservers may not be available until DNS is configured
+              nameservers = ['ns1.infra.email', 'ns2.infra.email']; // Default Scalesends nameservers
+            }
+          }
+        } catch (apiError) {
+          console.error('PlugSaaS API error after retries:', apiError);
+          // Continue with partial fulfillment - admin can complete manually
+          // But still mark the account as assigned since we reserved it
         }
-      } catch (apiError) {
-        console.error('PlugSaaS API error after retries:', apiError);
-        // Continue with partial fulfillment - admin can complete manually
-        // But still mark the account as assigned since we reserved it
       }
 
       // Step 5: Mark account as assigned (with retry)
       await withRetry(
-        () => sheetsInventory.assignAccounts(
+        () => supabaseInventory.assignAccounts(
           [msAccount],
           orderId,
           customerEmail,
@@ -354,7 +385,7 @@ async function processAutomatedFulfillment(supabase, orderId, orderData, custome
       if (msAccount && reservedAccounts.some(r => r.account.email === msAccount.email)) {
         try {
           console.log(`Rolling back: Releasing reserved account for ${domainEntry.domain}`);
-          await sheetsInventory.releaseAccounts(orderId);
+          await supabaseInventory.releaseAccounts(orderId);
         } catch (rollbackError) {
           console.error('Rollback failed:', rollbackError);
           // Log rollback failure but continue
@@ -375,7 +406,7 @@ async function processAutomatedFulfillment(supabase, orderId, orderData, custome
   if (reservedAccounts.length > 0) {
     console.log(`Releasing ${reservedAccounts.length} remaining reserved accounts`);
     try {
-      await sheetsInventory.releaseAccounts(orderId);
+      await supabaseInventory.releaseAccounts(orderId);
     } catch (rollbackError) {
       console.error('Final rollback failed:', rollbackError);
     }
@@ -411,7 +442,7 @@ async function processAutomatedFulfillment(supabase, orderId, orderData, custome
 
   // Check inventory levels and send alert if low
   try {
-    const inventoryStatus = await sheetsInventory.isInventoryLow();
+    const inventoryStatus = await supabaseInventory.isInventoryLow();
     if (inventoryStatus.isLow) {
       await sendLowInventoryAlert(supabase, inventoryStatus);
     }

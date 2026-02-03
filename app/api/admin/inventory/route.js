@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
-import { sheetsInventory } from '@/lib/google-sheets';
+import { supabaseInventory } from '@/lib/supabase-inventory';
 
 export async function GET() {
   try {
-    const stats = await sheetsInventory.getStats();
-    const inventory = await sheetsInventory.getAllInventory();
+    const stats = await supabaseInventory.getStats();
+    const inventory = await supabaseInventory.getAllInventory(100);
 
     return NextResponse.json({
       stats,
-      inventory: inventory.slice(0, 100), // Limit to first 100 for performance
+      inventory,
       total: inventory.length,
     });
   } catch (error) {
@@ -46,7 +46,7 @@ export async function POST(request) {
       );
     }
 
-    const addedCount = await sheetsInventory.addAccounts(validAccounts);
+    const addedCount = await supabaseInventory.addAccounts(validAccounts);
 
     return NextResponse.json({
       success: true,
