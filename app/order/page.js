@@ -210,20 +210,17 @@ export default function OrderPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 glass border-b border-[hsl(222,47%,12%)]">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/order" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-all">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-lg font-semibold text-white tracking-tight">DeliverOn</span>
+      <header className="bg-[#0a0a0a] border-b border-[#1a1a1a]">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/order" className="flex items-center gap-2">
+            <span className="text-xl font-bold text-white tracking-tight">DELIVERON</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-sm text-[hsl(215,20%,60%)] hover:text-white transition-colors font-medium px-3 py-2"
+              className="text-sm text-gray-400 hover:text-white transition-colors font-medium px-3 py-2"
             >
               Sign In
             </Link>
@@ -231,7 +228,7 @@ export default function OrderPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-9 border-[hsl(222,47%,18%)] bg-[hsl(222,47%,10%)] text-white hover:bg-[hsl(222,47%,14%)] hover:border-[hsl(222,47%,22%)]"
+                className="h-9 border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#151515]"
               >
                 Dashboard
                 <ChevronRight className="w-4 h-4 ml-1" />
@@ -243,10 +240,10 @@ export default function OrderPage() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
+        <div className="container mx-auto px-6 pt-16 pb-12">
           <div className="text-center max-w-3xl mx-auto">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-full text-sm text-blue-400 mb-8 animate-fade-in">
+            <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 px-4 py-2 rounded-full text-sm text-teal-400 mb-8 animate-fade-in">
               <Sparkles className="w-4 h-4" />
               <span className="font-medium">Enterprise-Grade Infrastructure</span>
             </div>
@@ -259,7 +256,7 @@ export default function OrderPage() {
             </h1>
 
             {/* Subheading */}
-            <p className="text-lg text-[hsl(215,20%,60%)] max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up">
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up">
               Dedicated Microsoft inboxes with full DNS authentication. 100 inboxes per domain, warmed and ready to send.
             </p>
 
@@ -273,7 +270,7 @@ export default function OrderPage() {
               ].map((stat, i) => (
                 <div key={i} className="text-center">
                   <div className="text-2xl md:text-3xl font-bold text-white">{stat.value}</div>
-                  <div className="text-xs text-[hsl(215,20%,50%)] mt-1 font-medium">{stat.label}</div>
+                  <div className="text-xs text-gray-500 mt-1 font-medium">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -282,23 +279,23 @@ export default function OrderPage() {
       </section>
 
       {/* Order Form Section */}
-      <section className="max-w-4xl mx-auto px-6 pb-20">
-        <div className="card-elevated rounded-2xl overflow-hidden">
+      <section className="container mx-auto max-w-4xl px-6 pb-20">
+        <div className="bg-[#111111] border border-[#1a1a1a] rounded-2xl overflow-hidden">
           {/* Card Header */}
-          <div className="px-6 py-5 border-b border-[hsl(222,47%,12%)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="px-6 py-5 border-b border-[#1a1a1a] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-white">Configure Your Order</h2>
-              <p className="text-sm text-[hsl(215,20%,55%)] mt-1">
-                <span className="text-blue-400 font-semibold">${pricePerDomain}</span> per domain, full infrastructure included
+              <p className="text-sm text-gray-500 mt-1">
+                <span className="text-teal-400 font-semibold">${pricePerDomain}</span> per domain, full infrastructure included
               </p>
             </div>
-            <div className="flex gap-1 p-1 bg-[hsl(222,47%,9%)] rounded-lg border border-[hsl(222,47%,14%)]">
+            <div className="flex gap-1 p-1 bg-[#0a0a0a] rounded-lg border border-[#1a1a1a]">
               <button
                 onClick={() => setOrderMode('single')}
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                   orderMode === 'single'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                    : 'text-[hsl(215,20%,55%)] hover:text-white'
+                    ? 'bg-teal-500 text-black'
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
                 Manual Entry
@@ -307,8 +304,8 @@ export default function OrderPage() {
                 onClick={() => setOrderMode('bulk')}
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${
                   orderMode === 'bulk'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                    : 'text-[hsl(215,20%,55%)] hover:text-white'
+                    ? 'bg-teal-500 text-black'
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
                 <Upload className="w-4 h-4" />
@@ -590,7 +587,7 @@ export default function OrderPage() {
             <Button
               onClick={handleCheckout}
               disabled={loading}
-              className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white text-base font-semibold btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 bg-teal-500 hover:bg-teal-600 text-black text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -640,16 +637,11 @@ export default function OrderPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[hsl(222,47%,10%)]">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <footer className="border-t border-[#1a1a1a]">
+        <div className="container mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm font-medium text-[hsl(215,20%,55%)]">DeliverOn</span>
-            </div>
-            <p className="text-[hsl(215,20%,45%)] text-sm">
+            <span className="text-sm font-medium text-gray-500">DELIVERON</span>
+            <p className="text-gray-600 text-sm">
               © {new Date().getFullYear()} DeliverOn. All rights reserved.
             </p>
           </div>

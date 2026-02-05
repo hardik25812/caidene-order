@@ -67,9 +67,9 @@ export default function PricingManagement() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
-      <header className="border-b border-[#1a2235] bg-[#0d1321]">
+      <header className="border-b border-[#1a1a1a] bg-[#0a0a0a]">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/admin" className="text-gray-400 hover:text-white flex items-center gap-2">
@@ -77,7 +77,7 @@ export default function PricingManagement() {
               Back to Admin
             </Link>
             <div className="flex items-center gap-2">
-              <DollarSign className="w-6 h-6 text-green-400" />
+              <DollarSign className="w-6 h-6 text-teal-400" />
               <div>
                 <h1 className="text-xl font-bold text-white">Pricing Management</h1>
                 <p className="text-gray-500 text-sm">Configure tiered pricing for inbox orders</p>
@@ -88,7 +88,7 @@ export default function PricingManagement() {
             <Button 
               variant="outline" 
               onClick={handleRefresh}
-              className="border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]"
+              className="border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
@@ -96,7 +96,7 @@ export default function PricingManagement() {
             <Button 
               onClick={handleSave}
               disabled={saving}
-              className="bg-white text-black hover:bg-gray-200"
+              className="bg-teal-500 hover:bg-teal-600 text-black"
             >
               <Save className="w-4 h-4 mr-2" />
               {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
@@ -108,7 +108,7 @@ export default function PricingManagement() {
       <div className="container mx-auto px-6 py-8 max-w-4xl">
         <div className="space-y-6">
           {/* SMTP Tier */}
-          <Card className="bg-[#111827] border-[#1f2937]">
+          <Card className="bg-[#111111] border-[#1a1a1a]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -128,7 +128,7 @@ export default function PricingManagement() {
                       ...pricing,
                       smtp: { ...pricing.smtp, pricePerInbox: parseFloat(e.target.value) }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                   <p className="text-gray-600 text-xs mt-2">Flat rate for all SMTP inboxes</p>
                 </div>
@@ -140,7 +140,7 @@ export default function PricingManagement() {
                       ...pricing,
                       smtp: { ...pricing.smtp, description: e.target.value }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                 </div>
               </div>
@@ -148,14 +148,14 @@ export default function PricingManagement() {
           </Card>
 
           {/* Basic Tier */}
-          <Card className="bg-[#111827] border-[#1f2937]">
+          <Card className="bg-[#111111] border-[#1a1a1a]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">BASIC Tier</h3>
                   <p className="text-gray-500 text-sm mt-1">For orders under the threshold</p>
                 </div>
-                <Badge className="bg-blue-500 text-white">BASIC</Badge>
+                <Badge className="bg-teal-500 text-black">BASIC</Badge>
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div>
@@ -167,7 +167,7 @@ export default function PricingManagement() {
                       ...pricing,
                       basic: { ...pricing.basic, threshold: parseInt(e.target.value) }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                   <p className="text-gray-600 text-xs mt-2">Orders below this count</p>
                 </div>
@@ -181,7 +181,7 @@ export default function PricingManagement() {
                       ...pricing,
                       basic: { ...pricing.basic, pricePerInbox: parseFloat(e.target.value) }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                 </div>
                 <div>
@@ -192,7 +192,7 @@ export default function PricingManagement() {
                       ...pricing,
                       basic: { ...pricing.basic, description: e.target.value }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                 </div>
               </div>
@@ -200,14 +200,14 @@ export default function PricingManagement() {
           </Card>
 
           {/* Intermediate Tier */}
-          <Card className="bg-[#111827] border-[#1f2937]">
+          <Card className="bg-[#111111] border-[#1a1a1a]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">INTERMEDIATE Tier</h3>
                   <p className="text-gray-500 text-sm mt-1">For orders between thresholds</p>
                 </div>
-                <Badge className="bg-purple-500 text-white">INTERMEDIATE</Badge>
+                <Badge className="bg-cyan-500 text-black">INTERMEDIATE</Badge>
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div>
@@ -219,7 +219,7 @@ export default function PricingManagement() {
                       ...pricing,
                       intermediate: { ...pricing.intermediate, threshold: parseInt(e.target.value) }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                   <p className="text-gray-600 text-xs mt-2">Orders below this count</p>
                 </div>
@@ -233,7 +233,7 @@ export default function PricingManagement() {
                       ...pricing,
                       intermediate: { ...pricing.intermediate, pricePerInbox: parseFloat(e.target.value) }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                 </div>
                 <div>
@@ -244,7 +244,7 @@ export default function PricingManagement() {
                       ...pricing,
                       intermediate: { ...pricing.intermediate, description: e.target.value }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                 </div>
               </div>
@@ -252,14 +252,14 @@ export default function PricingManagement() {
           </Card>
 
           {/* Pro Tier */}
-          <Card className="bg-[#111827] border-[#1f2937]">
+          <Card className="bg-[#111111] border-[#1a1a1a]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">PRO Tier</h3>
                   <p className="text-gray-500 text-sm mt-1">For orders above the threshold</p>
                 </div>
-                <Badge className="bg-purple-600 text-white">PRO</Badge>
+                <Badge className="bg-purple-500 text-white">PRO</Badge>
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div>
@@ -268,7 +268,7 @@ export default function PricingManagement() {
                     type="text"
                     value="No limit (+)"
                     disabled
-                    className="bg-[#1a2235] border-[#2d3748] text-gray-500"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-gray-500"
                   />
                 </div>
                 <div>
@@ -281,7 +281,7 @@ export default function PricingManagement() {
                       ...pricing,
                       pro: { ...pricing.pro, pricePerInbox: parseFloat(e.target.value) }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                 </div>
                 <div>
@@ -292,7 +292,7 @@ export default function PricingManagement() {
                       ...pricing,
                       pro: { ...pricing.pro, description: e.target.value }
                     })}
-                    className="bg-[#1a2235] border-[#2d3748] text-white"
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
                   />
                 </div>
               </div>

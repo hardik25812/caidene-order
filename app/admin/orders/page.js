@@ -146,7 +146,7 @@ export default function OrdersManagement() {
       completed: { label: 'Completed', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
       partial: { label: 'Partial', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
       failed: { label: 'Failed', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
-      pending: { label: 'Pending', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+      pending: { label: 'Pending', className: 'bg-blue-500/20 text-teal-400 border-blue-500/30' },
       processing: { label: 'Processing', className: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
       queued: { label: 'Queued', className: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
     };
@@ -225,7 +225,7 @@ export default function OrdersManagement() {
     const config = {
       available: { label: 'Available', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
       reserved: { label: 'Reserved', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-      assigned: { label: 'Assigned', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+      assigned: { label: 'Assigned', className: 'bg-blue-500/20 text-teal-400 border-blue-500/30' },
       depleted: { label: 'Depleted', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
     };
     const { label, className } = config[status] || config.available;
@@ -233,27 +233,24 @@ export default function OrdersManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
-      <header className="border-b border-[#1a2235] bg-[#0d1321]">
+      <header className="border-b border-[#1a1a1a] bg-[#0a0a0a]">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-              <Mail className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-white">DeliverOn</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold text-white tracking-tight">DELIVERON</span>
           </div>
           <nav className="flex items-center gap-6">
             <Link href="/admin" className="text-gray-400 hover:text-white">Dashboard</Link>
             <button 
               onClick={() => setActiveTab('orders')}
-              className={activeTab === 'orders' ? 'text-white font-medium' : 'text-gray-400 hover:text-white'}
+              className={activeTab === 'orders' ? 'text-teal-400 font-medium' : 'text-gray-400 hover:text-white'}
             >
               Orders
             </button>
             <button 
               onClick={() => setActiveTab('inventory')}
-              className={activeTab === 'inventory' ? 'text-white font-medium flex items-center gap-1' : 'text-gray-400 hover:text-white flex items-center gap-1'}
+              className={activeTab === 'inventory' ? 'text-teal-400 font-medium flex items-center gap-1' : 'text-gray-400 hover:text-white flex items-center gap-1'}
             >
               <Package className="w-4 h-4" /> Inventory
               {inventoryStats?.isLow && <span className="w-2 h-2 bg-red-500 rounded-full"></span>}
@@ -261,8 +258,8 @@ export default function OrdersManagement() {
             <Link href="/admin/pricing" className="text-gray-400 hover:text-white flex items-center gap-1">
               <DollarSign className="w-4 h-4" /> Pricing
             </Link>
-            <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-gray-300" />
+            <div className="w-8 h-8 bg-[#1a1a1a] rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-gray-400" />
             </div>
           </nav>
         </div>
@@ -282,7 +279,7 @@ export default function OrdersManagement() {
           <Button 
             variant="outline" 
             onClick={activeTab === 'orders' ? fetchOrders : fetchInventory}
-            className="border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]"
+            className="border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
@@ -298,7 +295,7 @@ export default function OrdersManagement() {
                 placeholder="Search by order ID, email, domain..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-5 bg-[#111827] border-[#1f2937] text-white placeholder:text-gray-500"
+                className="pl-12 py-5 bg-[#111111] border-[#1a1a1a] text-white placeholder:text-gray-500"
               />
             </div>
             <div className="flex gap-2">
@@ -306,8 +303,8 @@ export default function OrdersManagement() {
                 variant={statusFilter === 'all' ? 'default' : 'outline'}
                 onClick={() => setStatusFilter('all')}
                 className={statusFilter === 'all' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
+                  ? 'bg-teal-500 text-black' 
+                  : 'border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]'}
               >
                 All Orders
               </Button>
@@ -315,8 +312,8 @@ export default function OrdersManagement() {
                 variant={statusFilter === 'pending' ? 'default' : 'outline'}
                 onClick={() => setStatusFilter('pending')}
                 className={statusFilter === 'pending' 
-                  ? 'bg-yellow-600 text-white' 
-                  : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
+                  ? 'bg-yellow-500 text-black' 
+                  : 'border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]'}
               >
                 <Clock className="w-4 h-4 mr-2" />
                 Awaiting
@@ -325,8 +322,8 @@ export default function OrdersManagement() {
                 variant={statusFilter === 'fulfilled' ? 'default' : 'outline'}
                 onClick={() => setStatusFilter('fulfilled')}
                 className={statusFilter === 'fulfilled' 
-                  ? 'bg-green-600 text-white' 
-                  : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
+                  ? 'bg-green-500 text-black' 
+                  : 'border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]'}
               >
                 <CheckCircle2 className="w-4 h-4 mr-2" />
                 Completed
@@ -342,13 +339,13 @@ export default function OrdersManagement() {
           <div className="col-span-2">
             <div className="space-y-3">
               {loading ? (
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-[#111111] border-[#1a1a1a]">
                   <CardContent className="p-6 text-center text-gray-400">
                     Loading orders...
                   </CardContent>
                 </Card>
               ) : filteredOrders.length === 0 ? (
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-[#111111] border-[#1a1a1a]">
                   <CardContent className="p-6 text-center text-gray-400">
                     No orders found
                   </CardContent>
@@ -357,8 +354,8 @@ export default function OrdersManagement() {
                 filteredOrders.map((order) => (
                   <Card 
                     key={order.id} 
-                    className={`bg-[#111827] border-[#1f2937] cursor-pointer transition-all hover:border-blue-500/50 ${
-                      selectedOrder?.id === order.id ? 'border-blue-500 ring-1 ring-blue-500/50' : ''
+                    className={`bg-[#111111] border-[#1a1a1a] cursor-pointer transition-all hover:border-teal-500/50 ${
+                      selectedOrder?.id === order.id ? 'border-teal-500 ring-1 ring-teal-500/50' : ''
                     }`}
                     onClick={() => setSelectedOrder(order)}
                   >
@@ -413,7 +410,7 @@ export default function OrdersManagement() {
           {/* Order Detail Panel */}
           <div className="col-span-1">
             {selectedOrder ? (
-              <Card className="bg-[#111827] border-[#1f2937] sticky top-6">
+              <Card className="bg-[#111111] border-[#1a1a1a] sticky top-6">
                 <CardContent className="p-6">
                   <div className="space-y-6">
                     <div>
@@ -469,8 +466,8 @@ export default function OrdersManagement() {
                             const domainName = typeof domain === 'string' ? domain : domain?.domain;
                             const forwardingUrl = typeof domain === 'object' ? domain?.forwardingUrl : null;
                             return (
-                              <div key={idx} className="bg-[#0a0e1a] p-2 rounded">
-                                <code className="text-sm text-blue-400">{domainName}</code>
+                              <div key={idx} className="bg-[#0a0a0a] p-2 rounded">
+                                <code className="text-sm text-teal-400">{domainName}</code>
                                 {forwardingUrl && (
                                   <div className="text-xs text-gray-500 mt-1">→ {forwardingUrl}</div>
                                 )}
@@ -527,8 +524,8 @@ export default function OrdersManagement() {
                           </h4>
                           <div className="space-y-2">
                             {allNameservers.map((ns, idx) => (
-                              <div key={idx} className="flex items-center justify-between bg-[#0a0e1a] p-2 rounded">
-                                <code className="text-sm text-blue-400">{ns}</code>
+                              <div key={idx} className="flex items-center justify-between bg-[#0a0a0a] p-2 rounded">
+                                <code className="text-sm text-teal-400">{ns}</code>
                               </div>
                             ))}
                             <Button
@@ -551,7 +548,7 @@ export default function OrdersManagement() {
                         <h4 className="text-sm font-medium text-gray-400 mb-3">Domain Fulfillment</h4>
                         <div className="space-y-3">
                           {selectedOrder.fulfillment_results.map((result, idx) => (
-                            <div key={idx} className="bg-[#0a0e1a] p-3 rounded-lg space-y-2">
+                            <div key={idx} className="bg-[#0a0a0a] p-3 rounded-lg space-y-2">
                               <div className="flex items-center justify-between">
                                 <span className="text-white font-medium text-sm">{result.domain}</span>
                                 <Badge 
@@ -566,7 +563,7 @@ export default function OrdersManagement() {
                               {result.msAccountEmail && (
                                 <div className="flex items-center gap-2 text-xs">
                                   <span className="text-gray-500">MS Account:</span>
-                                  <code className="text-blue-400">{result.msAccountEmail}</code>
+                                  <code className="text-teal-400">{result.msAccountEmail}</code>
                                   <button 
                                     onClick={() => copyToClipboard(result.msAccountEmail, `ms-${idx}`)}
                                     className="text-gray-500 hover:text-white"
@@ -658,7 +655,7 @@ export default function OrdersManagement() {
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-[#111827] border-[#1f2937]">
+              <Card className="bg-[#111111] border-[#1a1a1a]">
                 <CardContent className="p-6 text-center text-gray-400">
                   Select an order to view details
                 </CardContent>
@@ -692,7 +689,7 @@ export default function OrdersManagement() {
                 </Card>
                 <Card className="bg-[#111827] border-[#1f2937]">
                   <CardContent className="p-4">
-                    <div className="text-2xl font-bold text-blue-400">{inventoryStats.assigned}</div>
+                    <div className="text-2xl font-bold text-teal-400">{inventoryStats.assigned}</div>
                     <div className="text-sm text-gray-400">Assigned</div>
                   </CardContent>
                 </Card>
@@ -722,7 +719,7 @@ export default function OrdersManagement() {
             <Card className="bg-[#111827] border-[#1f2937]">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <Upload className="w-5 h-5 text-blue-400" />
+                  <Upload className="w-5 h-5 text-teal-400" />
                   Add Microsoft 365 Accounts
                 </h3>
                 <div className="space-y-4">
@@ -732,7 +729,7 @@ export default function OrdersManagement() {
                       accept=".csv"
                       onChange={handleCsvUpload}
                       disabled={uploading}
-                      className="bg-[#0a0e1a] border-[#1f2937] text-white"
+                      className="bg-[#0a0a0a] border-[#1f2937] text-white"
                     />
                     <Button
                       variant="outline"
@@ -757,7 +754,7 @@ export default function OrdersManagement() {
                       value={csvText}
                       onChange={(e) => setCsvText(e.target.value)}
                       placeholder="email,password,notes&#10;account@outlook.com,password123,"
-                      className="bg-[#0a0e1a] border-[#1f2937] text-white font-mono text-sm"
+                      className="bg-[#0a0a0a] border-[#1f2937] text-white font-mono text-sm"
                       rows={4}
                       disabled={uploading}
                     />
@@ -806,7 +803,7 @@ export default function OrdersManagement() {
                         inventory.map((item) => (
                           <tr key={item.id} className="border-b border-[#1f2937]/50 hover:bg-[#1f2937]/30">
                             <td className="py-3 px-4">
-                              <code className="text-sm text-blue-400">{item.email}</code>
+                              <code className="text-sm text-teal-400">{item.email}</code>
                             </td>
                             <td className="py-3 px-4">{getStatusBadge(item.status)}</td>
                             <td className="py-3 px-4 text-sm text-gray-300">{item.customer_email || '-'}</td>

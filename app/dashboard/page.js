@@ -130,40 +130,37 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-600/20 flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+          <div className="w-12 h-12 rounded-xl bg-teal-500/20 flex items-center justify-center">
+            <Loader2 className="w-6 h-6 animate-spin text-teal-400" />
           </div>
-          <p className="text-[hsl(215,20%,55%)] text-sm font-medium">Loading your dashboard...</p>
+          <p className="text-gray-500 text-sm font-medium">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
-      <header className="sticky top-0 z-50 glass border-b border-[hsl(222,47%,12%)]">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-all">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-lg font-semibold text-white tracking-tight">DeliverOn</span>
+      <header className="bg-[#0a0a0a] border-b border-[#1a1a1a]">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <span className="text-xl font-bold text-white tracking-tight">DELIVERON</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/order">
-              <Button className="h-9 bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 font-medium">
+              <Button className="h-9 bg-teal-500 hover:bg-teal-600 text-black font-medium">
                 <Plus className="w-4 h-4 mr-2" />
                 New Order
               </Button>
             </Link>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={handleLogout}
-              className="h-9 text-[hsl(215,20%,55%)] hover:text-white hover:bg-[hsl(222,47%,12%)]"
+              className="h-9 border-[#2a2a2a] text-gray-400 hover:text-white hover:bg-[#151515]"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
@@ -173,11 +170,11 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="container mx-auto px-6 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white tracking-tight">Dashboard</h1>
-          <p className="text-[hsl(215,20%,55%)] mt-1">Manage your orders and DNS configuration</p>
+          <h1 className="text-2xl font-bold text-white">Welcome back!</h1>
+          <p className="text-gray-500 mt-1">Manage your orders and DNS configuration</p>
         </div>
 
         {/* Stats Grid */}
@@ -185,11 +182,11 @@ export default function DashboardPage() {
           <div className="stat-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="stat-label">Account</p>
+                <p className="text-gray-500 text-sm">Account</p>
                 <p className="text-white text-sm font-medium truncate mt-1 max-w-[180px]">{user?.email}</p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <Mail className="w-5 h-5 text-blue-400" />
+              <div className="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center">
+                <Mail className="w-5 h-5 text-teal-400" />
               </div>
             </div>
           </div>
@@ -197,10 +194,10 @@ export default function DashboardPage() {
           <div className="stat-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="stat-label">Total Orders</p>
-                <p className="stat-value">{orders.length}</p>
+                <p className="text-gray-500 text-sm">Total Orders</p>
+                <p className="text-3xl font-bold text-white mt-1">{orders.length}</p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
                 <Package className="w-5 h-5 text-purple-400" />
               </div>
             </div>
@@ -209,11 +206,11 @@ export default function DashboardPage() {
           <div className="stat-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="stat-label">Total Domains</p>
-                <p className="stat-value">{totalDomains}</p>
+                <p className="text-gray-500 text-sm">Total Domains</p>
+                <p className="text-3xl font-bold text-white mt-1">{totalDomains}</p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                <Globe className="w-5 h-5 text-emerald-400" />
+              <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                <Globe className="w-5 h-5 text-cyan-400" />
               </div>
             </div>
           </div>
@@ -221,11 +218,11 @@ export default function DashboardPage() {
           <div className="stat-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="stat-label">Completed</p>
-                <p className="stat-value">{completedOrders}</p>
+                <p className="text-gray-500 text-sm">Completed</p>
+                <p className="text-3xl font-bold text-white mt-1">{completedOrders}</p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
-                <CheckCircle2 className="w-5 h-5 text-teal-400" />
+              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-green-400" />
               </div>
             </div>
           </div>
@@ -236,7 +233,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-semibold text-white">Your Orders</h2>
-              <span className="text-xs font-medium text-[hsl(215,20%,50%)] bg-[hsl(222,47%,12%)] px-2.5 py-1 rounded-full">
+              <span className="text-xs font-medium text-gray-500 bg-[#1a1a1a] px-2.5 py-1 rounded-full">
                 {orders.length} total
               </span>
             </div>
@@ -245,7 +242,7 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 border-[hsl(222,47%,18%)] text-[hsl(215,20%,60%)] hover:text-white hover:bg-[hsl(222,47%,12%)]"
+                  className="h-8 border-[#2a2a2a] text-gray-400 hover:text-white hover:bg-[#151515]"
                 >
                   <Plus className="w-4 h-4 mr-1.5" />
                   New Order
@@ -258,14 +255,14 @@ export default function DashboardPage() {
             <div className="card-elevated rounded-xl">
               <div className="empty-state">
                 <div className="empty-state-icon">
-                  <Inbox className="w-8 h-8 text-[hsl(215,20%,45%)]" />
+                  <Inbox className="w-8 h-8 text-gray-600" />
                 </div>
                 <h3 className="empty-state-title">No orders yet</h3>
                 <p className="empty-state-description">
                   Get started by placing your first order for enterprise email infrastructure.
                 </p>
                 <Link href="/order" className="mt-6">
-                  <Button className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20">
+                  <Button className="bg-teal-500 hover:bg-teal-600 text-black font-medium">
                     Place Your First Order
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -473,18 +470,18 @@ export default function DashboardPage() {
         </div>
 
         {/* Help Section */}
-        <div className="rounded-xl bg-gradient-to-r from-blue-600/10 to-[hsl(222,47%,8%)] border border-blue-500/20 p-5">
+        <div className="rounded-xl bg-[#111111] border border-[#1a1a1a] p-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/15 flex items-center justify-center">
-                <HelpCircle className="w-6 h-6 text-blue-400" />
+              <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                <HelpCircle className="w-6 h-6 text-orange-400" />
               </div>
               <div>
                 <h3 className="text-white font-medium">Need help with DNS setup?</h3>
-                <p className="text-[hsl(215,20%,55%)] text-sm">Our team is available 24/7 via WhatsApp</p>
+                <p className="text-gray-500 text-sm">Our team is available 24/7 via WhatsApp</p>
               </div>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 font-medium">
+            <Button variant="outline" className="border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]">
               Contact Support
               <ExternalLink className="w-4 h-4 ml-2" />
             </Button>

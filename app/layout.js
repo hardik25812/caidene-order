@@ -1,24 +1,18 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-});
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'DeliverOn - Enterprise Email Infrastructure',
-  description: 'Enterprise-grade cold email infrastructure. Dedicated Microsoft inboxes built for volume.',
+  title: 'Deliveron - Order Management',
+  description: 'Order and manage your Deliveron email infrastructure subscriptions',
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} min-h-screen bg-[hsl(222,47%,6%)] antialiased`}>
-        <div className="min-h-screen bg-radial-gradient">
-          {children}
-        </div>
+      <body className={`${inter.className} min-h-screen bg-black`}>
+        {children}
       </body>
     </html>
   );
