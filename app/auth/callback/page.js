@@ -1,23 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 
-export default function AuthCallback() {
+function AuthCallbackContent() {
   const router = useRouter();
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get the hash fragment from the URL
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const accessToken = hashParams.get('access_token');
         const refreshToken = hashParams.get('refresh_token');
 
         if (accessToken && refreshToken) {
-          // Set the session with the tokens from the URL
           const { data, error } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken,
@@ -30,7 +28,6 @@ export default function AuthCallback() {
           }
 
           if (data.session) {
-            // Sync user to database
             await fetch('/api/auth/sync', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -45,7 +42,6 @@ export default function AuthCallback() {
           }
         }
 
-        // If no tokens in URL, check for existing session
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           router.push('/dashboard');
@@ -62,11 +58,23 @@ export default function AuthCallback() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
       <div className="text-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto" />
-        <p className="text-zinc-400 mt-4">Signing you in...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-teal-500 mx-auto" />
+        <p className="text-gray-400 mt-4">Signing you in...</p>
       </div>
     </div>
+  );
+}
+
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-teal-500" />
+      </div>
+    }>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
