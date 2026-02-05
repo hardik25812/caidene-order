@@ -5,17 +5,27 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Search, 
-  Filter,
+  Home,
+  Package,
+  DollarSign,
+  Settings,
+  BarChart3,
+  ChevronDown,
+  ChevronRight,
   Clock,
   CheckCircle2,
-  ChevronRight,
-  ArrowLeft,
-  Mail,
+  Filter,
   RefreshCw,
-  User,
-  DollarSign
+  Mail,
+  Zap,
+  Sparkles,
+  Bell,
+  HelpCircle,
+  MoreHorizontal,
+  ArrowUpRight
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -25,6 +35,11 @@ export default function OrdersManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [expandedSections, setExpandedSections] = useState({
+    orders: true,
+    analytics: false,
+    settings: false
+  });
 
   useEffect(() => {
     fetchOrders();
@@ -63,9 +78,9 @@ export default function OrdersManagement() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
     
-    if (diffMins < 60) return `${diffMins} minutes ago`;
-    if (diffHours < 24) return `${diffHours} hours ago`;
-    return `${diffDays} days ago`;
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
   };
 
   const getOrderNumber = (id) => {
@@ -87,221 +102,286 @@ export default function OrdersManagement() {
     }
   };
 
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
   return (
-    <div className="min-h-screen bg-[#0a0e1a]">
-      {/* Header */}
-      <header className="border-b border-[#1a2235] bg-[#0d1321]">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+    <div className="flex h-screen bg-[#0d0d0d]">
+      {/* Sidebar */}
+      <aside className="w-64 bg-[#0d0d0d] border-r border-[#1a1a1a] flex flex-col">
+        <div className="p-4 border-b border-[#1a1a1a]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-              <Mail className="w-6 h-6 text-white" />
+            <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-black" />
             </div>
-            <span className="text-2xl font-bold text-white">DeliverOn</span>
+            <span className="text-lg font-semibold text-white">DeliverOn</span>
           </div>
-          <nav className="flex items-center gap-6">
-            <Link href="/admin" className="text-gray-400 hover:text-white">Dashboard</Link>
-            <Link href="/admin/orders" className="text-white font-medium">Orders</Link>
-            <Link href="/admin/pricing" className="text-gray-400 hover:text-white flex items-center gap-1">
-              <DollarSign className="w-4 h-4" /> Pricing
+        </div>
+
+        <ScrollArea className="flex-1 py-4">
+          <nav className="px-3 space-y-1">
+            <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#1a1a1a]">
+              <Home className="w-4 h-4" />
+              <span className="text-sm font-medium">Home</span>
             </Link>
-            <Link href="/order" className="text-gray-400 hover:text-white">Leads</Link>
-            <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-gray-300" />
-            </div>
-          </nav>
-        </div>
-      </header>
 
-      <div className="container mx-auto px-6 py-6">
-        {/* Page Title & Actions */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Orders Management</h1>
-            <p className="text-gray-500">View and manage all customer orders</p>
-          </div>
-          <Button 
-            variant="outline" 
-            onClick={fetchOrders}
-            className="border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
-
-        {/* Filters */}
-        <div className="flex gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-            <Input
-              placeholder="Search by order ID, email, domain..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 py-5 bg-[#111827] border-[#1f2937] text-white placeholder:text-gray-500"
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant={statusFilter === 'all' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('all')}
-              className={statusFilter === 'all' 
-                ? 'bg-blue-600 text-white' 
-                : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
-            >
-              All Orders
-            </Button>
-            <Button
-              variant={statusFilter === 'pending' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('pending')}
-              className={statusFilter === 'pending' 
-                ? 'bg-yellow-600 text-white' 
-                : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
-            >
-              <Clock className="w-4 h-4 mr-2" />
-              Awaiting
-            </Button>
-            <Button
-              variant={statusFilter === 'fulfilled' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('fulfilled')}
-              className={statusFilter === 'fulfilled' 
-                ? 'bg-green-600 text-white' 
-                : 'border-[#1f2937] text-gray-300 hover:text-white hover:bg-[#1f2937]'}
-            >
-              <CheckCircle2 className="w-4 h-4 mr-2" />
-              Completed
-            </Button>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-3 gap-6">
-          {/* Orders List */}
-          <div className="col-span-2">
-            <div className="space-y-3">
-              {loading ? (
-                <Card className="bg-[#111827] border-[#1f2937]">
-                  <CardContent className="p-6 text-center text-gray-400">
-                    Loading orders...
-                  </CardContent>
-                </Card>
-              ) : filteredOrders.length === 0 ? (
-                <Card className="bg-[#111827] border-[#1f2937]">
-                  <CardContent className="p-6 text-center text-gray-400">
-                    No orders found
-                  </CardContent>
-                </Card>
-              ) : (
-                filteredOrders.map((order) => (
-                  <Card 
-                    key={order.id} 
-                    className={`bg-[#111827] border-[#1f2937] cursor-pointer transition-all hover:border-blue-500/50 ${
-                      selectedOrder?.id === order.id ? 'border-blue-500 ring-1 ring-blue-500/50' : ''
-                    }`}
-                    onClick={() => setSelectedOrder(order)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            order.status === 'fulfilled' 
-                              ? 'bg-green-500/20' 
-                              : 'bg-yellow-500/20'
-                          }`}>
-                            {order.status === 'fulfilled' 
-                              ? <CheckCircle2 className="w-4 h-4 text-green-400" />
-                              : <Clock className="w-4 h-4 text-yellow-400" />
-                            }
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-white font-semibold">{getOrderNumber(order.id)}</span>
-                              <Badge 
-                                variant="outline" 
-                                className={`text-xs ${
-                                  order.status === 'fulfilled'
-                                    ? 'border-green-500/50 text-green-400'
-                                    : 'border-yellow-500/50 text-yellow-400'
-                                }`}
-                              >
-                                {order.status === 'fulfilled' ? 'Completed' : 'Awaiting'}
-                              </Badge>
-                            </div>
-                            <p className="text-gray-400 text-sm">{order.email || 'No email'}</p>
-                            <p className="text-gray-500 text-xs mt-1">{formatTimeAgo(order.created_at)}</p>
-                          </div>
-                        </div>
-                        <div className="text-right flex items-center gap-4">
-                          <div>
-                            <p className="text-white font-semibold">{(order.inbox_count || 1) * 100} Inboxes</p>
-                            <p className="text-gray-500 text-xs">${(order.inbox_count || 1) * 49}/mo</p>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-gray-500" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
+            <div className="pt-4">
+              <button 
+                onClick={() => toggleSection('orders')}
+                className="flex items-center justify-between w-full px-3 py-2 text-white"
+              >
+                <div className="flex items-center gap-3">
+                  <Package className="w-4 h-4" />
+                  <span className="text-sm font-medium">Orders</span>
+                </div>
+                {expandedSections.orders ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </button>
+              {expandedSections.orders && (
+                <div className="ml-7 mt-1 space-y-1">
+                  <Link href="/admin" className="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#1a1a1a] rounded-lg">
+                    All Orders
+                  </Link>
+                  <Link href="/admin/orders" className="block px-3 py-2 text-sm text-white bg-[#1a1a1a] rounded-lg">
+                    Manage Orders
+                  </Link>
+                </div>
               )}
             </div>
-          </div>
 
-          {/* Order Detail Panel */}
-          <div className="col-span-1">
-            {selectedOrder ? (
-              <Card className="bg-[#111827] border-[#1f2937] sticky top-6">
-                <CardContent className="p-6">
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Order Details</h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Order ID</span>
-                          <span className="text-white font-mono text-sm">{getOrderNumber(selectedOrder.id)}</span>
+            <Link href="/admin/pricing" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#1a1a1a]">
+              <DollarSign className="w-4 h-4" />
+              <span className="text-sm font-medium">Pricing</span>
+            </Link>
+
+            <div className="pt-2">
+              <button 
+                onClick={() => toggleSection('analytics')}
+                className="flex items-center justify-between w-full px-3 py-2 text-gray-400 hover:text-white"
+              >
+                <div className="flex items-center gap-3">
+                  <BarChart3 className="w-4 h-4" />
+                  <span className="text-sm font-medium">Analytics</span>
+                </div>
+                {expandedSections.analytics ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </button>
+            </div>
+
+            <div className="pt-2">
+              <button 
+                onClick={() => toggleSection('settings')}
+                className="flex items-center justify-between w-full px-3 py-2 text-gray-400 hover:text-white"
+              >
+                <div className="flex items-center gap-3">
+                  <Settings className="w-4 h-4" />
+                  <span className="text-sm font-medium">Settings</span>
+                </div>
+                {expandedSections.settings ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </button>
+            </div>
+          </nav>
+        </ScrollArea>
+
+        <div className="p-4 border-t border-[#1a1a1a] space-y-2">
+          <Link href="/order" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#1a1a1a]">
+            <Zap className="w-4 h-4" />
+            <span className="text-sm font-medium">View Store</span>
+          </Link>
+          <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-medium hover:from-yellow-500 hover:to-yellow-600">
+            Upgrade
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 bg-[#fafafa] overflow-auto">
+        {/* Top Bar */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">Orders Management</h1>
+              <p className="text-sm text-gray-500">View and manage all customer orders</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="outline" 
+                onClick={fetchOrders}
+                className="border-gray-200"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        {/* Filters */}
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search by order ID, email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-gray-50 border-gray-200"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant={statusFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => setStatusFilter('all')}
+                className={statusFilter === 'all' ? 'bg-gray-900 text-white' : 'border-gray-200'}
+                size="sm"
+              >
+                All Orders
+              </Button>
+              <Button
+                variant={statusFilter === 'pending' ? 'default' : 'outline'}
+                onClick={() => setStatusFilter('pending')}
+                className={statusFilter === 'pending' ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'border-gray-200'}
+                size="sm"
+              >
+                <Clock className="w-3 h-3 mr-1" />
+                Awaiting
+              </Button>
+              <Button
+                variant={statusFilter === 'fulfilled' ? 'default' : 'outline'}
+                onClick={() => setStatusFilter('fulfilled')}
+                className={statusFilter === 'fulfilled' ? 'bg-green-500 text-white hover:bg-green-600' : 'border-gray-200'}
+                size="sm"
+              >
+                <CheckCircle2 className="w-3 h-3 mr-1" />
+                Completed
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <div className="grid grid-cols-3 gap-6">
+            {/* Orders List */}
+            <div className="col-span-2">
+              <Card className="bg-white border-gray-200 shadow-sm">
+                <CardContent className="p-0">
+                  {loading ? (
+                    <div className="p-8 text-center text-gray-500">
+                      <RefreshCw className="w-8 h-8 mx-auto animate-spin text-gray-300 mb-3" />
+                      <p>Loading orders...</p>
+                    </div>
+                  ) : filteredOrders.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">
+                      <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                      <p>No orders found</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-100">
+                      {filteredOrders.map((order) => (
+                        <div 
+                          key={order.id} 
+                          className={`px-5 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                            selectedOrder?.id === order.id 
+                              ? order.status === 'fulfilled' 
+                                ? 'bg-green-50 border-l-2 border-green-500' 
+                                : 'bg-yellow-50 border-l-2 border-yellow-500' 
+                              : ''
+                          }`}
+                          onClick={() => setSelectedOrder(order)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                order.status === 'fulfilled' ? 'bg-green-100' : 'bg-yellow-100'
+                              }`}>
+                                {order.status === 'fulfilled' 
+                                  ? <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                  : <Clock className="w-5 h-5 text-yellow-600" />
+                                }
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-gray-900">{getOrderNumber(order.id)}</span>
+                                  <Badge 
+                                    variant="outline" 
+                                    className={`text-[10px] px-1.5 py-0 h-5 ${
+                                      order.status === 'fulfilled'
+                                        ? 'border-green-300 text-green-700 bg-green-50'
+                                        : 'border-yellow-300 text-yellow-700 bg-yellow-50'
+                                    }`}
+                                  >
+                                    {order.status === 'fulfilled' ? 'Completed' : 'Awaiting'}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-gray-500">{order.email}</p>
+                                <p className="text-xs text-gray-400 mt-0.5">{formatTimeAgo(order.created_at)}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-gray-900">{(order.inbox_count || 1) * 100} inboxes</p>
+                              <p className="text-sm text-green-600 font-medium">${(order.inbox_count || 1) * 49}/mo</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Email</span>
-                          <span className="text-white text-sm">{selectedOrder.email}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Plan</span>
-                          <span className="text-white">{selectedOrder.plan_name || 'Growth'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Domains</span>
-                          <span className="text-white">{selectedOrder.inbox_count || 1}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Total Inboxes</span>
-                          <span className="text-white font-semibold">{(selectedOrder.inbox_count || 1) * 100}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Monthly Value</span>
-                          <span className="text-green-400 font-semibold">${(selectedOrder.inbox_count || 1) * 49}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Status</span>
-                          <Badge 
-                            className={selectedOrder.status === 'fulfilled' 
-                              ? 'bg-green-500/20 text-green-400' 
-                              : 'bg-yellow-500/20 text-yellow-400'}
-                          >
-                            {selectedOrder.status === 'fulfilled' ? 'Completed' : 'Awaiting'}
-                          </Badge>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Created</span>
-                          <span className="text-gray-300 text-sm">{formatTimeAgo(selectedOrder.created_at)}</span>
-                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Order Detail Panel */}
+            <div className="col-span-1">
+              {selectedOrder ? (
+                <Card className="bg-white border-gray-200 shadow-sm sticky top-6">
+                  <div className="px-5 py-4 border-b border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900">Order Details</h3>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <CardContent className="p-5 space-y-5">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-500">Order ID</span>
+                        <span className="text-sm font-medium text-gray-900 font-mono">{getOrderNumber(selectedOrder.id)}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-500">Customer</span>
+                        <span className="text-sm font-medium text-gray-900">{selectedOrder.email}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-500">Plan</span>
+                        <Badge className="bg-blue-50 text-blue-700 border-blue-200">{selectedOrder.plan_name || 'Growth'}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-500">Domains</span>
+                        <span className="text-sm font-medium text-gray-900">{selectedOrder.inbox_count || 1}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-500">Inboxes</span>
+                        <span className="text-sm font-bold text-gray-900">{(selectedOrder.inbox_count || 1) * 100}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-500">Monthly Value</span>
+                        <span className="text-sm font-bold text-green-600">${(selectedOrder.inbox_count || 1) * 49}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-sm text-gray-500">Status</span>
+                        <Badge className={selectedOrder.status === 'fulfilled' 
+                          ? 'bg-green-50 text-green-700 border-green-200' 
+                          : 'bg-yellow-50 text-yellow-700 border-yellow-200'}>
+                          {selectedOrder.status === 'fulfilled' ? 'Completed' : 'Awaiting'}
+                        </Badge>
                       </div>
                     </div>
 
                     {selectedOrder.stripe_customer_id && (
-                      <div className="pt-4 border-t border-[#1f2937]">
-                        <h4 className="text-sm font-medium text-gray-400 mb-2">Stripe Info</h4>
-                        <p className="text-gray-500 text-xs font-mono break-all">Customer: {selectedOrder.stripe_customer_id}</p>
-                        {selectedOrder.stripe_subscription_id && (
-                          <p className="text-gray-500 text-xs font-mono break-all mt-1">Sub: {selectedOrder.stripe_subscription_id}</p>
-                        )}
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3">Stripe Info</h4>
+                        <p className="text-xs text-gray-600 font-mono break-all">Customer: {selectedOrder.stripe_customer_id}</p>
                       </div>
                     )}
 
@@ -316,26 +396,25 @@ export default function OrdersManagement() {
                     )}
 
                     {selectedOrder.status === 'fulfilled' && (
-                      <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-                        <div className="flex items-center gap-2 text-green-400">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span className="text-sm font-medium">Order Fulfilled</span>
-                        </div>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                        <CheckCircle2 className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-green-700">Order Fulfilled</p>
                       </div>
                     )}
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="bg-[#111827] border-[#1f2937]">
-                <CardContent className="p-6 text-center text-gray-400">
-                  Select an order to view details
-                </CardContent>
-              </Card>
-            )}
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="bg-white border-gray-200 shadow-sm">
+                  <CardContent className="p-8 text-center">
+                    <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                    <p className="text-gray-500">Select an order to view details</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
