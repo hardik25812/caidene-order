@@ -35,9 +35,7 @@ import {
   Activity,
   RefreshCw,
   ExternalLink,
-  Lock,
-  Eye,
-  EyeOff
+  Lock
 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -64,10 +62,9 @@ export default function AdminDashboard() {
   const [authLoading, setAuthLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
   const [signingIn, setSigningIn] = useState(false);
+  const [sentMagicLink, setSentMagicLink] = useState(false);
 
   // Admin emails whitelist
   const ADMIN_EMAILS = [
@@ -79,6 +76,19 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && ADMIN_EMAILS.includes(session.user.email)) {
+        setUser(session.user);
+        setIsAuthenticated(true);
+        setAuthLoading(false);
+      } else if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -106,24 +116,26 @@ export default function AdminDashboard() {
     setSigningIn(true);
     setAuthError('');
 
+    if (!ADMIN_EMAILS.includes(email.toLowerCase())) {
+      setAuthError('Access denied. This email is not authorized as an admin.');
+      setSigningIn(false);
+      return;
+    }
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithOtp({
         email,
-        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/admin`,
+        },
       });
 
       if (error) throw error;
 
-      if (!ADMIN_EMAILS.includes(data.user.email)) {
-        await supabase.auth.signOut();
-        setAuthError('Access denied. You are not authorized as an admin.');
-        return;
-      }
-
-      setUser(data.user);
-      setIsAuthenticated(true);
+      setAuthError('');
+      setSentMagicLink(true);
     } catch (err) {
-      setAuthError(err.message || 'Failed to sign in');
+      setAuthError(err.message || 'Failed to send magic link');
     } finally {
       setSigningIn(false);
     }
@@ -239,27 +251,6 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              <div>
-                <Label className="text-gray-400">Password</Label>
-                <div className="relative mt-2">
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white placeholder:text-gray-600 focus:border-teal-500 pr-10"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
               {authError && (
                 <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                   <p className="text-red-400 text-sm">{authError}</p>
@@ -271,9 +262,15 @@ export default function AdminDashboard() {
                 disabled={signingIn}
                 className="w-full bg-teal-500 hover:bg-teal-600 text-black font-medium py-5"
               >
-                {signingIn ? 'Signing in...' : 'Sign In'}
+                {signingIn ? 'Sending...' : 'Send Magic Link'}
               </Button>
             </form>
+
+            {sentMagicLink && (
+              <div className="mt-4 p-3 bg-teal-500/10 border border-teal-500/30 rounded-lg">
+                <p className="text-teal-400 text-sm text-center">Magic link sent! Check your email to sign in.</p>
+              </div>
+            )}
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
