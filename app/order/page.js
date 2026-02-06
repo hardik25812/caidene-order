@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -43,8 +43,23 @@ export default function OrderPage() {
 
   const [csvData, setCsvData] = useState(null);
   const [csvFileName, setCsvFileName] = useState('');
+  const [pricePerDomain, setPricePerDomain] = useState(49);
 
-  const pricePerDomain = 49;
+  useEffect(() => {
+    const fetchPricing = async () => {
+      try {
+        const res = await fetch('/api/admin/pricing');
+        const data = await res.json();
+        if (data.pricing?.landingPagePrice) {
+          setPricePerDomain(data.pricing.landingPagePrice);
+        }
+      } catch (err) {
+        console.error('Error fetching pricing:', err);
+      }
+    };
+    fetchPricing();
+  }, []);
+
   const totalPrice = pricePerDomain * (orderMode === 'bulk' && csvData ? csvData.length : domainEntries.length);
 
   const addDomainEntry = () => {
@@ -319,34 +334,34 @@ export default function OrderPage() {
             {/* Step 1: Contact Info */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-full bg-teal-500 flex items-center justify-center">
                   <span className="text-xs font-bold text-white">1</span>
                 </div>
                 <h3 className="text-sm font-semibold text-white">Contact Information</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-[hsl(215,20%,70%)]">
-                    Email Address <span className="text-blue-400">*</span>
+                  <Label className="text-sm font-medium text-gray-400">
+                    Email Address <span className="text-teal-400">*</span>
                   </Label>
                   <Input
                     type="email"
                     placeholder="you@company.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-11 bg-[hsl(222,47%,9%)] border-[hsl(222,47%,16%)] text-white placeholder:text-[hsl(215,20%,40%)] focus:border-blue-500 focus:ring-blue-500/20"
+                    className="h-11 bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500 focus:ring-teal-500/20"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-[hsl(215,20%,70%)]">
-                    Phone Number <span className="text-[hsl(215,20%,45%)]">(optional)</span>
+                  <Label className="text-sm font-medium text-gray-400">
+                    Phone Number <span className="text-gray-500">(optional)</span>
                   </Label>
                   <Input
                     type="tel"
                     placeholder="+1 (555) 000-0000"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="h-11 bg-[hsl(222,47%,9%)] border-[hsl(222,47%,16%)] text-white placeholder:text-[hsl(215,20%,40%)] focus:border-blue-500 focus:ring-blue-500/20"
+                    className="h-11 bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500 focus:ring-teal-500/20"
                   />
                 </div>
               </div>
@@ -356,14 +371,14 @@ export default function OrderPage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-full bg-teal-500 flex items-center justify-center">
                     <span className="text-xs font-bold text-white">2</span>
                   </div>
                   <h3 className="text-sm font-semibold text-white">
                     {orderMode === 'single' ? 'Domain Configuration' : 'Bulk Upload'}
                   </h3>
                   {orderMode === 'single' && (
-                    <span className="text-xs text-[hsl(215,20%,50%)] bg-[hsl(222,47%,12%)] px-2 py-1 rounded-full">
+                    <span className="text-xs text-gray-500 bg-[#111111] px-2 py-1 rounded-full">
                       {domainEntries.length} domain{domainEntries.length > 1 ? 's' : ''}
                     </span>
                   )}
@@ -373,7 +388,7 @@ export default function OrderPage() {
                     variant="outline"
                     size="sm"
                     onClick={addDomainEntry}
-                    className="h-8 border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/50"
+                    className="h-8 border-teal-500/30 text-teal-400 hover:bg-teal-500/10 hover:border-teal-500/50"
                   >
                     <Plus className="w-4 h-4 mr-1.5" />
                     Add Domain
@@ -387,11 +402,11 @@ export default function OrderPage() {
                     {domainEntries.map((entry, domainIndex) => (
                       <div
                         key={domainIndex}
-                        className="rounded-xl bg-[hsl(222,47%,9%)] border border-[hsl(222,47%,14%)] p-5 space-y-5 hover:border-[hsl(222,47%,18%)] transition-colors"
+                        className="rounded-xl bg-[#0a0a0a] border border-[#1a1a1a] p-5 space-y-5 hover:border-[#2a2a2a] transition-colors"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Globe className="w-4 h-4 text-blue-400" />
+                            <Globe className="w-4 h-4 text-teal-400" />
                             <span className="text-sm font-medium text-white">Domain {domainIndex + 1}</span>
                           </div>
                           {domainEntries.length > 1 && (
@@ -399,7 +414,7 @@ export default function OrderPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => removeDomainEntry(domainIndex)}
-                              className="h-8 w-8 p-0 text-[hsl(215,20%,50%)] hover:text-red-400 hover:bg-red-500/10"
+                              className="h-8 w-8 p-0 text-gray-500 hover:text-red-400 hover:bg-red-500/10"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -408,25 +423,25 @@ export default function OrderPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label className="text-xs font-medium text-[hsl(215,20%,60%)]">
-                              Domain Name <span className="text-blue-400">*</span>
+                            <Label className="text-xs font-medium text-gray-400">
+                              Domain Name <span className="text-teal-400">*</span>
                             </Label>
                             <Input
                               placeholder="example.com"
                               value={entry.domain}
                               onChange={(e) => updateDomainEntry(domainIndex, 'domain', e.target.value)}
-                              className="h-10 bg-[hsl(222,47%,7%)] border-[hsl(222,47%,14%)] text-white placeholder:text-[hsl(215,20%,35%)] focus:border-blue-500"
+                              className="h-10 bg-[#080808] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs font-medium text-[hsl(215,20%,60%)]">
-                              Forwarding URL <span className="text-blue-400">*</span>
+                            <Label className="text-xs font-medium text-gray-400">
+                              Forwarding URL <span className="text-teal-400">*</span>
                             </Label>
                             <Input
                               placeholder="https://yourwebsite.com"
                               value={entry.forwardingUrl}
                               onChange={(e) => updateDomainEntry(domainIndex, 'forwardingUrl', e.target.value)}
-                              className="h-10 bg-[hsl(222,47%,7%)] border-[hsl(222,47%,14%)] text-white placeholder:text-[hsl(215,20%,35%)] focus:border-blue-500"
+                              className="h-10 bg-[#080808] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500"
                             />
                           </div>
                         </div>
@@ -434,13 +449,13 @@ export default function OrderPage() {
                         {/* Names Section */}
                         <div className="space-y-3 pt-2">
                           <div className="flex items-center justify-between">
-                            <Label className="text-xs font-medium text-[hsl(215,20%,60%)]">
-                              Inbox Names <span className="text-[hsl(215,20%,45%)]">(1-3 required)</span>
+                            <Label className="text-xs font-medium text-gray-400">
+                              Inbox Names <span className="text-gray-500">(1-3 required)</span>
                             </Label>
                             {entry.names.length < 3 && (
                               <button
                                 onClick={() => addName(domainIndex)}
-                                className="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1"
+                                className="text-xs text-teal-400 hover:text-teal-300 font-medium flex items-center gap-1"
                               >
                                 <Plus className="w-3 h-3" />
                                 Add Name
@@ -454,20 +469,20 @@ export default function OrderPage() {
                                   placeholder="First Name"
                                   value={name.firstName}
                                   onChange={(e) => updateName(domainIndex, nameIndex, 'firstName', e.target.value)}
-                                  className="h-9 bg-[hsl(222,47%,7%)] border-[hsl(222,47%,14%)] text-white placeholder:text-[hsl(215,20%,35%)] focus:border-blue-500 text-sm"
+                                  className="h-9 bg-[#080808] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500 text-sm"
                                 />
                                 <Input
                                   placeholder="Last Name"
                                   value={name.lastName}
                                   onChange={(e) => updateName(domainIndex, nameIndex, 'lastName', e.target.value)}
-                                  className="h-9 bg-[hsl(222,47%,7%)] border-[hsl(222,47%,14%)] text-white placeholder:text-[hsl(215,20%,35%)] focus:border-blue-500 text-sm"
+                                  className="h-9 bg-[#080808] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500 text-sm"
                                 />
                                 {entry.names.length > 1 && (
                                   <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => removeName(domainIndex, nameIndex)}
-                                    className="h-9 w-9 p-0 text-[hsl(215,20%,45%)] hover:text-red-400 hover:bg-red-500/10 flex-shrink-0"
+                                    className="h-9 w-9 p-0 text-gray-500 hover:text-red-400 hover:bg-red-500/10 flex-shrink-0"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                   </Button>
@@ -482,7 +497,7 @@ export default function OrderPage() {
                 ) : (
                   /* Bulk CSV Upload */
                   <div className="space-y-4">
-                    <div className="rounded-xl bg-[hsl(222,47%,9%)] border-2 border-dashed border-[hsl(222,47%,16%)] p-8 text-center hover:border-blue-500/40 transition-colors">
+                    <div className="rounded-xl bg-[#0a0a0a] border-2 border-dashed border-[#1a1a1a] p-8 text-center hover:border-teal-500/40 transition-colors">
                       <input
                         type="file"
                         accept=".csv"
@@ -493,13 +508,13 @@ export default function OrderPage() {
                       />
                       {!csvData ? (
                         <label htmlFor="csv-upload" className="cursor-pointer block">
-                          <div className="w-14 h-14 bg-[hsl(222,47%,12%)] rounded-xl flex items-center justify-center mx-auto mb-4">
-                            <FileSpreadsheet className="w-7 h-7 text-[hsl(215,20%,50%)]" />
+                          <div className="w-14 h-14 bg-[#111111] rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <FileSpreadsheet className="w-7 h-7 text-gray-500" />
                           </div>
                           <p className="text-white font-medium mb-1">Drop your CSV file here</p>
-                          <p className="text-[hsl(215,20%,50%)] text-sm mb-4">or click to browse</p>
-                          <div className="inline-block p-3 bg-[hsl(222,47%,7%)] rounded-lg border border-[hsl(222,47%,14%)]">
-                            <code className="text-[hsl(215,20%,55%)] text-xs font-mono">
+                          <p className="text-gray-500 text-sm mb-4">or click to browse</p>
+                          <div className="inline-block p-3 bg-[#080808] rounded-lg border border-[#1a1a1a]">
+                            <code className="text-gray-500 text-xs font-mono">
                               domain, forwarding, firstname1, lastname1, ...
                             </code>
                           </div>
@@ -515,7 +530,7 @@ export default function OrderPage() {
                             variant="outline"
                             size="sm"
                             onClick={clearCsv}
-                            className="mt-4 border-[hsl(222,47%,18%)] text-[hsl(215,20%,55%)] hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10"
+                            className="mt-4 border-[#2a2a2a] text-gray-500 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10"
                           >
                             <Trash2 className="w-4 h-4 mr-2" />
                             Remove File
@@ -525,20 +540,20 @@ export default function OrderPage() {
                     </div>
 
                     {csvData && csvData.length > 0 && (
-                      <div className="rounded-xl bg-[hsl(222,47%,9%)] border border-[hsl(222,47%,14%)] p-4 max-h-48 overflow-y-auto">
-                        <p className="text-[hsl(215,20%,50%)] text-xs font-semibold uppercase tracking-wider mb-3">Preview</p>
+                      <div className="rounded-xl bg-[#0a0a0a] border border-[#1a1a1a] p-4 max-h-48 overflow-y-auto">
+                        <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">Preview</p>
                         <div className="space-y-2">
                           {csvData.slice(0, 5).map((entry, i) => (
-                            <div key={i} className="text-sm py-2 px-3 bg-[hsl(222,47%,7%)] rounded-lg flex items-center gap-2">
-                              <Globe className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                              <span className="text-blue-300 font-medium">{entry.domain}</span>
-                              <span className="text-[hsl(222,47%,20%)]">→</span>
-                              <span className="text-[hsl(215,20%,50%)] truncate">{entry.forwardingUrl || 'No forwarding'}</span>
+                            <div key={i} className="text-sm py-2 px-3 bg-[#080808] rounded-lg flex items-center gap-2">
+                              <Globe className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                              <span className="text-teal-300 font-medium">{entry.domain}</span>
+                              <span className="text-gray-700">→</span>
+                              <span className="text-gray-500 truncate">{entry.forwardingUrl || 'No forwarding'}</span>
                             </div>
                           ))}
                         </div>
                         {csvData.length > 5 && (
-                          <p className="text-[hsl(215,20%,45%)] text-xs mt-3 text-center">+ {csvData.length - 5} more domains</p>
+                          <p className="text-gray-500 text-xs mt-3 text-center">+ {csvData.length - 5} more domains</p>
                         )}
                       </div>
                     )}
@@ -550,22 +565,22 @@ export default function OrderPage() {
             {/* Step 3: Order Summary */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-full bg-teal-500 flex items-center justify-center">
                   <span className="text-xs font-bold text-white">3</span>
                 </div>
                 <h3 className="text-sm font-semibold text-white">Order Summary</h3>
               </div>
               <div className="pl-10">
-                <div className="rounded-xl bg-gradient-to-r from-blue-600/10 to-[hsl(222,47%,9%)] border border-blue-500/20 p-5">
+                <div className="rounded-xl bg-gradient-to-r from-teal-500/10 to-[#0a0a0a] border border-teal-500/20 p-5">
                   <div className="flex justify-between items-end">
                     <div>
-                      <p className="text-sm text-[hsl(215,20%,60%)]">
+                      <p className="text-sm text-gray-400">
                         {orderMode === 'bulk' && csvData ? csvData.length : domainEntries.length} domain{(orderMode === 'bulk' && csvData ? csvData.length : domainEntries.length) > 1 ? 's' : ''} × ${pricePerDomain}
                       </p>
-                      <p className="text-xs text-[hsl(215,20%,45%)] mt-1">Full infrastructure included</p>
+                      <p className="text-xs text-gray-500 mt-1">Full infrastructure included</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-[hsl(215,20%,50%)] uppercase tracking-wider font-medium">Total</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total</p>
                       <span className="text-3xl font-bold text-white">${totalPrice}</span>
                     </div>
                   </div>
@@ -603,15 +618,15 @@ export default function OrderPage() {
             </Button>
 
             {/* Features List */}
-            <div className="pt-6 border-t border-[hsl(222,47%,12%)]">
-              <p className="text-xs text-[hsl(215,20%,45%)] uppercase tracking-wider font-semibold mb-4 text-center">What's Included</p>
+            <div className="pt-6 border-t border-[#1a1a1a]">
+              <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-4 text-center">What's Included</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {features.map((feature, i) => (
                   <div key={i} className="flex items-center gap-3 p-2 rounded-lg">
                     <div className="w-6 h-6 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
                       <Check className="w-3.5 h-3.5 text-emerald-400" />
                     </div>
-                    <span className="text-[hsl(215,20%,65%)] text-sm">{feature.text}</span>
+                    <span className="text-gray-400 text-sm">{feature.text}</span>
                   </div>
                 ))}
               </div>
@@ -626,9 +641,9 @@ export default function OrderPage() {
             { icon: Clock, text: '48-Hour Setup' },
             { icon: Users, text: '24/7 Support' },
           ].map((item, i) => (
-            <div key={i} className="flex items-center gap-2.5 text-[hsl(215,20%,55%)]">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(222,47%,10%)] border border-[hsl(222,47%,14%)] flex items-center justify-center">
-                <item.icon className="w-4 h-4 text-blue-400" />
+            <div key={i} className="flex items-center gap-2.5 text-gray-500">
+              <div className="w-8 h-8 rounded-lg bg-[#111111] border border-[#1a1a1a] flex items-center justify-center">
+                <item.icon className="w-4 h-4 text-teal-400" />
               </div>
               <span className="text-sm font-medium">{item.text}</span>
             </div>

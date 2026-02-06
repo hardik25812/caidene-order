@@ -3,6 +3,7 @@ import { createServerClient } from '@/lib/supabase';
 
 // Default pricing configuration
 const defaultPricing = {
+  landingPagePrice: 49,
   smtp: {
     pricePerInbox: 1,
     description: 'SMTP inboxes - flat rate'

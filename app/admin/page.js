@@ -73,6 +73,7 @@ export default function AdminDashboard() {
   const ADMIN_EMAILS = [
     'admin@deliveron.com',
     'hardik25812@gmail.com',
+    'pandeyhardik258@gmail.com',
     // Add more admin emails here
   ];
 

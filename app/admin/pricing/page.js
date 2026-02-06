@@ -10,6 +10,7 @@ import Link from 'next/link';
 
 export default function PricingManagement() {
   const [pricing, setPricing] = useState({
+    landingPagePrice: 49,
     smtp: {
       pricePerInbox: 1,
       description: 'SMTP inboxes - flat rate'
@@ -107,6 +108,41 @@ export default function PricingManagement() {
 
       <div className="container mx-auto px-6 py-8 max-w-4xl">
         <div className="space-y-6">
+          {/* Landing Page Price */}
+          <Card className="bg-[#111111] border-[#1a1a1a] border-teal-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Landing Page Price</h3>
+                  <p className="text-gray-500 text-sm mt-1">This is the price shown to customers on the order page</p>
+                </div>
+                <Badge className="bg-teal-500 text-black">PUBLIC</Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="text-gray-400 text-sm block mb-2">Price per Domain ($)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={pricing.landingPagePrice}
+                    onChange={(e) => setPricing({
+                      ...pricing,
+                      landingPagePrice: parseFloat(e.target.value)
+                    })}
+                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white text-lg font-bold"
+                  />
+                  <p className="text-gray-600 text-xs mt-2">Displayed on the order/landing page as the per-domain price</p>
+                </div>
+                <div className="flex items-center">
+                  <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4 w-full">
+                    <p className="text-gray-500 text-xs mb-1">Customer sees:</p>
+                    <p className="text-white text-2xl font-bold">${pricing.landingPagePrice || 0} <span className="text-sm text-gray-400 font-normal">per domain</span></p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* SMTP Tier */}
           <Card className="bg-[#111111] border-[#1a1a1a]">
             <CardContent className="p-6">

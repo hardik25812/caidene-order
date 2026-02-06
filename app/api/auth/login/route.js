@@ -18,11 +18,12 @@ export async function POST(request) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
 
-    // Send magic link
+    // Send magic link with PKCE flow for persistent sessions
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
+        shouldCreateUser: true,
       },
     });
 
