@@ -71,6 +71,7 @@ export default function AdminDashboard() {
     'admin@deliveron.com',
     'hardik25812@gmail.com',
     'pandeyhardik258@gmail.com',
+    'caiden@deliveron.org',
     // Add more admin emails here
   ];
 
