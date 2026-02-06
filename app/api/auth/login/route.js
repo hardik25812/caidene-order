@@ -12,6 +12,9 @@ export async function POST(request) {
       );
     }
 
+    // Derive base URL from the request origin (works in both local and production)
+    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/$/, '') || process.env.NEXT_PUBLIC_BASE_URL || 'https://caidene-order1.vercel.app';
+
     // Create Supabase client for auth
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -22,7 +25,7 @@ export async function POST(request) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
+        emailRedirectTo: `${origin}/auth/callback`,
         shouldCreateUser: true,
       },
     });
