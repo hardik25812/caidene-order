@@ -2,28 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   DELIVERON DESIGN TOKENS
+   ============================================ */
+
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 168 84% 40%;
-    --primary-foreground: 0 0% 0%;
+    /* Brand Colors */
+    --color-blue: #217aff;
+    --color-blue-hover: #3d8eff;
+    --color-teal: #00a3e0;
+    --color-teal-hover: #00b8fc;
+    --color-orange: #ff733a;
+    --color-orange-hover: #ff8a57;
+    --color-red: #ff4d4d;
+    --color-green: #34d399;
+
+    /* Backgrounds */
+    --bg-dark: #020202;
+    --bg-darker: #161616;
+    --bg-card: #2a2a2a;
+    --bg-light: #f2f2f2;
+
+    /* Text */
+    --text-primary: #f2f2f2;
+    --text-secondary: #969696;
+    --text-muted: #727272;
+
+    /* Borders */
+    --border-dark: #363636;
+    --border-subtle: #525252;
+
+    /* Fonts */
+    --font-heading: 'Libre Caslon Display', serif;
+    --font-body: 'Public Sans', sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
+
+    /* Shadows (Inset Glow System) */
+    --shadow-blue: inset 0px 0.74px 3.7px -0.8px rgba(33, 122, 255, 0.2),
+                   inset 0px 2px 10px -1.6px rgba(33, 122, 255, 0.19),
+                   inset 0px 4.4px 22px -2.4px rgba(33, 122, 255, 0.17),
+                   inset 0px 9.8px 49px -3.2px rgba(33, 122, 255, 0.14),
+                   inset 0px 25px 125px -4px rgba(33, 122, 255, 0.05);
+    --shadow-teal: inset 0px 0.74px 3.7px -0.8px rgba(0, 163, 224, 0.08),
+                   inset 0px 2px 10px -1.6px rgba(0, 163, 224, 0.08),
+                   inset 0px 4.4px 22px -2.4px rgba(0, 163, 224, 0.07),
+                   inset 0px 9.8px 49px -3.2px rgba(0, 163, 224, 0.06),
+                   inset 0px 25px 125px -4px rgba(0, 163, 224, 0.02);
+    --shadow-white: inset 0px 0.74px 3.7px -0.8px rgba(255, 255, 255, 0.08),
+                    inset 0px 2px 10px -1.6px rgba(255, 255, 255, 0.08),
+                    inset 0px 4.4px 22px -2.4px rgba(255, 255, 255, 0.07),
+                    inset 0px 9.8px 49px -3.2px rgba(255, 255, 255, 0.06),
+                    inset 0px 25px 125px -4px rgba(255, 255, 255, 0.02);
+    --shadow-orange: inset 0px 0.74px 3.7px -0.8px rgba(255, 115, 58, 0.15),
+                     inset 0px 2px 10px -1.6px rgba(255, 115, 58, 0.12),
+                     inset 0px 4.4px 22px -2.4px rgba(255, 115, 58, 0.1),
+                     inset 0px 9.8px 49px -3.2px rgba(255, 115, 58, 0.06),
+                     inset 0px 25px 125px -4px rgba(255, 115, 58, 0.02);
+    --shadow-green: inset 0px 0.74px 3.7px -0.8px rgba(52, 211, 153, 0.12),
+                    inset 0px 2px 10px -1.6px rgba(52, 211, 153, 0.1),
+                    inset 0px 4.4px 22px -2.4px rgba(52, 211, 153, 0.08),
+                    inset 0px 9.8px 49px -3.2px rgba(52, 211, 153, 0.06),
+                    inset 0px 25px 125px -4px rgba(52, 211, 153, 0.02);
+
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+
+    /* Timing */
+    --t-fast: 0.3s;
+    --t-med: 0.6s;
+    --t-enter: 0.7s;
+
+    /* Layout */
+    --max-width: 1200px;
+    --header-height: 72px;
+
+    /* shadcn/ui variable overrides */
+    --background: 0 0% 1%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 1%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 1%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 216 100% 56%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 0 0% 95%;
     --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 168 84% 40%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84% 60%;
+    --muted-foreground: 0 0% 59%;
+    --accent: 216 100% 56%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 100% 65%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 18%;
-    --input: 0 0% 15%;
-    --ring: 168 84% 40%;
-    --radius: 0.75rem;
+    --border: 0 0% 21%;
+    --input: 0 0% 21%;
+    --ring: 216 100% 56%;
+    --radius: 0.5rem;
   }
 }
 
@@ -34,171 +114,234 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
   }
 }
 
-/* Custom styles for Deliveron branding */
-.gradient-text {
-  background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 50%, #0ea5e9 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* ============================================
+   MATERIAL SYMBOLS HELPER
+   ============================================ */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-filled {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-.card-glow {
-  box-shadow: 0 0 40px rgba(20, 184, 166, 0.15);
+/* ============================================
+   FONT UTILITIES
+   ============================================ */
+.font-heading {
+  font-family: var(--font-heading);
+}
+.font-body {
+  font-family: var(--font-body);
+}
+.font-mono {
+  font-family: var(--font-mono);
 }
 
-.btn-glow:hover {
-  box-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
+/* ============================================
+   GLASS HEADER
+   ============================================ */
+.do-header-glass {
+  background: rgba(2, 2, 2, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* Card styles */
-.card-elevated {
-  background: #111111;
-  border: 1px solid #1a1a1a;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-}
+/* ============================================
+   INSET GLOW CARD SHADOWS
+   ============================================ */
+.shadow-glow-blue { box-shadow: var(--shadow-blue); }
+.shadow-glow-teal { box-shadow: var(--shadow-teal); }
+.shadow-glow-white { box-shadow: var(--shadow-white); }
+.shadow-glow-orange { box-shadow: var(--shadow-orange); }
+.shadow-glow-green { box-shadow: var(--shadow-green); }
 
-.card-elevated:hover {
-  border-color: #2a2a2a;
+/* ============================================
+   BUTTONS (DeliverOn)
+   ============================================ */
+.do-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  font-family: var(--font-heading);
+  font-size: clamp(0.8125rem, 1.5vw, 1rem);
+  font-weight: 600;
+  height: 44px;
+  padding: 0 clamp(1rem, 2.5vw, 1.75rem);
+  border-radius: 8px;
+  transition: all var(--t-fast) ease;
+  cursor: pointer;
+  border: none;
+  letter-spacing: -0.01em;
 }
-
-/* Button styles */
-.btn-primary {
-  background: #14b8a6;
-  color: #000;
-  transition: all 0.15s ease;
+.do-btn--primary {
+  background: var(--color-blue);
+  color: #ffffff;
 }
-
-.btn-primary:hover {
-  background: #0d9488;
+.do-btn--primary:hover {
+  background: var(--color-blue-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(33, 122, 255, 0.3);
 }
-
-/* Glass effect */
-.glass {
-  background: rgba(10, 10, 10, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.do-btn--secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-dark);
 }
-
-/* Status badges */
-.badge-success {
-  background: rgba(34, 197, 94, 0.1);
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.2);
+.do-btn--secondary:hover {
+  border-color: var(--color-blue);
+  color: var(--color-blue);
+  transform: translateY(-2px);
 }
-
-.badge-warning {
-  background: rgba(251, 146, 60, 0.1);
-  color: #fb923c;
-  border: 1px solid rgba(251, 146, 60, 0.2);
-}
-
-.badge-error {
-  background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.badge-info {
-  background: rgba(20, 184, 166, 0.1);
-  color: #2dd4bf;
-  border: 1px solid rgba(20, 184, 166, 0.2);
-}
-
-.badge-neutral {
-  background: #1a1a1a;
-  color: #9ca3af;
-  border: 1px solid #2a2a2a;
-}
-
-/* Stats card */
-.stat-card {
-  background: #111111;
-  border: 1px solid #1a1a1a;
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  transition: all 0.2s ease;
-}
-
-.stat-card:hover {
-  border-color: #2a2a2a;
-}
-
-.stat-value {
-  font-size: 1.875rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #fff;
-}
-
-.stat-label {
+.do-btn--ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 0 var(--space-md);
+  height: 40px;
   font-size: 0.8125rem;
-  font-weight: 500;
-  color: #6b7280;
-  margin-top: 0.25rem;
+}
+.do-btn--ghost:hover {
+  color: var(--text-primary);
+}
+.do-btn--small {
+  height: 36px;
+  font-size: 0.8125rem;
+  padding: 0 var(--space-md);
 }
 
-/* Animations */
+/* ============================================
+   FORM INPUTS (DeliverOn)
+   ============================================ */
+.do-form-input {
+  width: 100%;
+  height: 44px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  padding: 0 var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease;
+  outline: none;
+}
+.do-form-input::placeholder {
+  color: var(--text-muted);
+}
+.do-form-input:focus {
+  border-color: var(--color-blue);
+  box-shadow: 0 0 0 3px rgba(33, 122, 255, 0.1);
+}
+
+/* ============================================
+   STATUS BADGES
+   ============================================ */
+.badge-success {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+.badge-warning {
+  background: rgba(255, 115, 58, 0.1);
+  color: #ff733a;
+  border: 1px solid rgba(255, 115, 58, 0.2);
+}
+.badge-error {
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+  border: 1px solid rgba(255, 77, 77, 0.2);
+}
+.badge-info {
+  background: rgba(33, 122, 255, 0.1);
+  color: #217aff;
+  border: 1px solid rgba(33, 122, 255, 0.2);
+}
+.badge-neutral {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-dark);
+}
+
+/* ============================================
+   SCROLL REVEAL ANIMATION
+   ============================================ */
+.do-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--t-enter) cubic-bezier(0.16, 1, 0.3, 1),
+              transform var(--t-enter) cubic-bezier(0.16, 1, 0.3, 1);
+}
+.do-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.do-reveal-delay-1 { transition-delay: 0.1s; }
+.do-reveal-delay-2 { transition-delay: 0.15s; }
+.do-reveal-delay-3 { transition-delay: 0.2s; }
+.do-reveal-delay-4 { transition-delay: 0.25s; }
+
+/* ============================================
+   LEGACY ANIMATIONS (kept for compatibility)
+   ============================================ */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
 }
-
 .animate-fade-in-up {
   animation: fadeInUp 0.4s ease-out forwards;
 }
 
-/* Stagger children */
-.stagger-children > * {
-  animation: fadeIn 0.3s ease-out forwards;
-  opacity: 0;
-}
-.stagger-children > *:nth-child(1) { animation-delay: 0.03s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.06s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.09s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.12s; }
-
-/* Empty state */
-.empty-state {
+/* ============================================
+   TABS (DeliverOn)
+   ============================================ */
+.do-tabs {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
+  gap: 2px;
+  background: var(--border-dark);
+  border-radius: 8px;
+  padding: 2px;
 }
-
-.empty-state-icon {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 1rem;
-  background: #1a1a1a;
+.do-tab {
+  flex: 1;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border-radius: 6px;
+  transition: all var(--t-fast) ease;
+  cursor: pointer;
+  border: none;
 }
-
-.empty-state-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 0.5rem;
+.do-tab.active {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
-
-.empty-state-description {
-  font-size: 0.875rem;
-  color: #6b7280;
-  max-width: 20rem;
+.do-tab:hover:not(.active) {
+  color: var(--text-primary);
 }

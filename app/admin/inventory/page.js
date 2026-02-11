@@ -151,34 +151,34 @@ export default function InventoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 animate-spin text-teal-500" />
+      <div className="min-h-screen bg-[#020202] flex items-center justify-center">
+        <RefreshCw className="w-8 h-8 animate-spin text-[#217aff]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-[#020202] text-white">
       {/* Header */}
-      <header className="border-b border-[#1a1a1a] bg-[#0a0a0a] sticky top-0 z-10">
+      <header className="border-b border-[#363636] bg-[#020202] sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-xl font-bold text-white tracking-tight">DELIVERON</span>
-            <span className="text-gray-500">|</span>
-            <h1 className="text-lg font-medium text-gray-300">Inventory Management</h1>
+            <img src="https://framerusercontent.com/images/4xMhy82Xz334ZgDkWW9tGUV0iI.png?scale-down-to=512" alt="DeliverOn" className="h-7 w-auto" />
+            <span className="text-[#727272]">|</span>
+            <h1 className="text-lg font-medium text-[#969696]">Inventory Management</h1>
           </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={() => router.push('/admin/orders')}
-              className="border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]"
+              className="border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]"
             >
               Orders
             </Button>
             <Button
               variant="outline"
               onClick={fetchInventory}
-              className="border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]"
+              className="border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
@@ -191,34 +191,34 @@ export default function InventoryPage() {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="pt-6">
                 <div className="text-2xl font-bold text-white">{stats.total}</div>
-                <div className="text-sm text-gray-500">Total</div>
+                <div className="text-sm text-[#727272]">Total</div>
               </CardContent>
             </Card>
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="pt-6">
                 <div className="text-2xl font-bold text-green-400">{stats.available}</div>
-                <div className="text-sm text-gray-500">Available</div>
+                <div className="text-sm text-[#727272]">Available</div>
               </CardContent>
             </Card>
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="pt-6">
                 <div className="text-2xl font-bold text-yellow-400">{stats.reserved}</div>
-                <div className="text-sm text-gray-500">Reserved</div>
+                <div className="text-sm text-[#727272]">Reserved</div>
               </CardContent>
             </Card>
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-teal-400">{stats.assigned}</div>
-                <div className="text-sm text-gray-500">Assigned</div>
+                <div className="text-2xl font-bold text-[#217aff]">{stats.assigned}</div>
+                <div className="text-sm text-[#727272]">Assigned</div>
               </CardContent>
             </Card>
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="pt-6">
                 <div className="text-2xl font-bold text-red-400">{stats.depleted}</div>
-                <div className="text-sm text-gray-500">Depleted</div>
+                <div className="text-sm text-[#727272]">Depleted</div>
               </CardContent>
             </Card>
           </div>
@@ -242,13 +242,13 @@ export default function InventoryPage() {
         )}
 
         {/* Upload Section */}
-        <Card className="bg-[#111111] border-[#1a1a1a] mb-6">
+        <Card className="bg-[#020202] border-[#363636] mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Upload className="w-5 h-5 text-teal-400" />
+              <Upload className="w-5 h-5 text-[#217aff]" />
               Add Microsoft 365 Accounts
             </CardTitle>
-            <CardDescription className="text-gray-500">
+            <CardDescription className="text-[#727272]">
               Upload CSV file or paste accounts manually
             </CardDescription>
           </CardHeader>
@@ -260,12 +260,12 @@ export default function InventoryPage() {
                 accept=".csv"
                 onChange={handleCsvUpload}
                 disabled={uploading}
-                className="bg-[#0a0a0a] border-[#2a2a2a]"
+                className="bg-[#020202] border-[#363636]"
               />
               <Button
                 variant="outline"
                 onClick={downloadTemplate}
-                className="border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a] whitespace-nowrap"
+                className="border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)] whitespace-nowrap"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Template
@@ -274,21 +274,21 @@ export default function InventoryPage() {
 
             {/* Manual Entry */}
             <div>
-              <label className="text-sm text-gray-400 mb-2 block">
+              <label className="text-sm text-[#969696] mb-2 block">
                 Or paste CSV data (email,password,notes):
               </label>
               <Textarea
                 value={csvText}
                 onChange={(e) => setCsvText(e.target.value)}
                 placeholder="account1@outlook.com,password123,notes&#10;account2@outlook.com,password456,"
-                className="bg-[#0a0a0a] border-[#2a2a2a] font-mono text-sm"
+                className="bg-[#020202] border-[#363636] font-mono text-sm"
                 rows={5}
                 disabled={uploading}
               />
               <Button
                 onClick={handleManualAdd}
                 disabled={uploading || !csvText.trim()}
-                className="mt-2 bg-teal-500 hover:bg-teal-600 text-black"
+                className="mt-2 bg-[#217aff] hover:bg-[#1a62cc] text-white"
               >
                 {uploading ? (
                   <>
@@ -312,7 +312,7 @@ export default function InventoryPage() {
             )}
 
             {/* Format Info */}
-            <div className="bg-[#0a0a0a] rounded-lg p-3 text-sm text-gray-400">
+            <div className="bg-[#020202] rounded-lg p-3 text-sm text-[#969696]">
               <p className="font-medium text-white mb-1">CSV Format:</p>
               <code className="text-xs">email,password,notes</code>
               <p className="mt-2">Example:</p>
@@ -322,18 +322,18 @@ export default function InventoryPage() {
         </Card>
 
         {/* Inventory Table */}
-        <Card className="bg-[#111111] border-[#1a1a1a]">
+        <Card className="bg-[#020202] border-[#363636]">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Inventory ({filteredInventory.length})</CardTitle>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#727272]" />
                 <Input
                   type="text"
                   placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-[#0a0a0a] border-[#2a2a2a] w-64"
+                  className="pl-10 bg-[#020202] border-[#363636] w-64"
                 />
               </div>
             </div>
@@ -342,41 +342,41 @@ export default function InventoryPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#1a1a1a]">
-                    <th className="text-left py-3 px-4 text-gray-500 font-medium">Email</th>
-                    <th className="text-left py-3 px-4 text-gray-500 font-medium">Status</th>
-                    <th className="text-left py-3 px-4 text-gray-500 font-medium">Customer</th>
-                    <th className="text-left py-3 px-4 text-gray-500 font-medium">Domain</th>
-                    <th className="text-left py-3 px-4 text-gray-500 font-medium">Date Added</th>
-                    <th className="text-left py-3 px-4 text-gray-500 font-medium">Assigned Date</th>
+                  <tr className="border-b border-[#363636]">
+                    <th className="text-left py-3 px-4 text-[#727272] font-medium">Email</th>
+                    <th className="text-left py-3 px-4 text-[#727272] font-medium">Status</th>
+                    <th className="text-left py-3 px-4 text-[#727272] font-medium">Customer</th>
+                    <th className="text-left py-3 px-4 text-[#727272] font-medium">Domain</th>
+                    <th className="text-left py-3 px-4 text-[#727272] font-medium">Date Added</th>
+                    <th className="text-left py-3 px-4 text-[#727272] font-medium">Assigned Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredInventory.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="text-center py-8 text-gray-500">
+                      <td colSpan="6" className="text-center py-8 text-[#727272]">
                         No inventory found. Upload CSV to add accounts.
                       </td>
                     </tr>
                   ) : (
                     filteredInventory.map((item) => (
-                      <tr key={item.id} className="border-b border-[#1a1a1a]/50 hover:bg-[#1a1a1a]/30">
+                      <tr key={item.id} className="border-b border-[#363636]/50 hover:bg-[rgba(33,122,255,0.06)]/30">
                         <td className="py-3 px-4">
-                          <code className="text-sm text-teal-400">{item.email}</code>
+                          <code className="text-sm text-[#217aff]">{item.email}</code>
                         </td>
                         <td className="py-3 px-4">
                           {getStatusBadge(item.status)}
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300">
+                        <td className="py-3 px-4 text-sm text-[#969696]">
                           {item.customer_email || '-'}
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300">
+                        <td className="py-3 px-4 text-sm text-[#969696]">
                           {item.domain || '-'}
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-400">
+                        <td className="py-3 px-4 text-sm text-[#969696]">
                           {item.date_added ? new Date(item.date_added).toLocaleDateString() : '-'}
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-400">
+                        <td className="py-3 px-4 text-sm text-[#969696]">
                           {item.assigned_date ? new Date(item.assigned_date).toLocaleDateString() : '-'}
                         </td>
                       </tr>

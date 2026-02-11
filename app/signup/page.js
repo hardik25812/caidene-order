@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
-export default function LoginPage() {
+export default function SignupPage() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,12 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    if (!name || name.trim().length < 2) {
+      setError('Please enter your full name');
+      return;
+    }
+
     if (!email || !email.includes('@')) {
       setError('Please enter a valid email address');
       return;
@@ -43,18 +49,34 @@ export default function LoginPage() {
 
     try {
       const { supabase } = await import('@/lib/supabase');
-      
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: name.trim(),
+          },
+        },
       });
 
-      if (signInError) throw signInError;
+      if (signUpError) throw signUpError;
 
-      // Redirect to dashboard
-      window.location.href = '/dashboard';
+      // Sync user to database with name
+      await fetch('/api/auth/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: data.user.id,
+          email: data.user.email,
+          name: name.trim(),
+        }),
+      });
+
+      // Redirect to order page (authenticated now)
+      window.location.href = '/order';
     } catch (err) {
-      setError(err.message || 'Authentication failed. Please try again.');
+      setError(err.message || 'Sign up failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -98,28 +120,28 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Right: Login Form Card */}
+        {/* Right: Signup Form Card */}
         <div
           ref={(el) => (revealRefs.current[1] = el)}
           className="do-reveal do-reveal-delay-1 bg-[#020202] border border-[#363636] rounded-[20px] p-8 lg:p-12 shadow-glow-blue transition-colors hover:border-[rgba(33,122,255,0.2)]"
         >
           <h2 className="font-heading text-[clamp(1.25rem,2.5vw,1.75rem)] font-bold tracking-[-0.03em] text-[#f2f2f2] mb-2">
-            Welcome back
+            Create your account
           </h2>
           <p className="font-body text-[0.9375rem] text-[#969696] mb-8">
-            Sign in to your account
+            Sign up to start placing orders
           </p>
 
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
               <label className="block font-body text-[0.8125rem] font-medium text-[#969696] mb-2">
-                Email address
+                Full Name <span className="text-[#217aff]">*</span>
               </label>
               <input
-                type="email"
-                placeholder="you@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="do-form-input"
                 autoFocus
                 required
@@ -128,12 +150,26 @@ export default function LoginPage() {
 
             <div className="mb-6">
               <label className="block font-body text-[0.8125rem] font-medium text-[#969696] mb-2">
-                Password
+                Email address <span className="text-[#217aff]">*</span>
+              </label>
+              <input
+                type="email"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="do-form-input"
+                required
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className="block font-body text-[0.8125rem] font-medium text-[#969696] mb-2">
+                Password <span className="text-[#217aff]">*</span>
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  placeholder="Min. 6 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="do-form-input pr-10"
@@ -150,7 +186,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <p className="text-[#ff4d4d] text-sm mb-4">{error}</p>
+              <p className="text-[#ff4d4d] text-sm mb-4 font-body">{error}</p>
             )}
 
             <button
@@ -158,15 +194,15 @@ export default function LoginPage() {
               disabled={loading}
               className="do-btn do-btn--primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
 
           <div className="text-center mt-6">
             <p className="font-body text-[0.8125rem] text-[#727272]">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-[#00a3e0] hover:text-[#00b8fc] font-medium transition-colors">
-                Sign up
+              Already have an account?{' '}
+              <Link href="/login" className="text-[#00a3e0] hover:text-[#00b8fc] font-medium transition-colors">
+                Sign in
               </Link>
             </p>
           </div>

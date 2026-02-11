@@ -17,6 +17,11 @@ module.exports = {
     		}
     	},
     	extend: {
+    		fontFamily: {
+    			heading: ['Libre Caslon Display', 'serif'],
+    			body: ['Public Sans', 'sans-serif'],
+    			mono: ['Roboto Mono', 'monospace'],
+    		},
     		colors: {
     			border: 'hsl(var(--border))',
     			input: 'hsl(var(--input))',
@@ -67,7 +72,12 @@ module.exports = {
     				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
     				border: 'hsl(var(--sidebar-border))',
     				ring: 'hsl(var(--sidebar-ring))'
-    			}
+    			},
+    			'do-blue': '#217aff',
+    			'do-teal': '#00a3e0',
+    			'do-orange': '#ff733a',
+    			'do-red': '#ff4d4d',
+    			'do-green': '#34d399',
     		},
     		borderRadius: {
     			lg: 'var(--radius)',

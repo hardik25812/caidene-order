@@ -146,9 +146,9 @@ export default function OrdersManagement() {
       completed: { label: 'Completed', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
       partial: { label: 'Partial', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
       failed: { label: 'Failed', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
-      pending: { label: 'Pending', className: 'bg-blue-500/20 text-teal-400 border-blue-500/30' },
+      pending: { label: 'Pending', className: 'bg-blue-500/20 text-[#217aff] border-blue-500/30' },
       processing: { label: 'Processing', className: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-      queued: { label: 'Queued', className: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+      queued: { label: 'Queued', className: 'bg-gray-500/20 text-[#969696] border-gray-500/30' },
     };
     const { label, className } = config[status] || config.pending;
     return <Badge variant="outline" className={className}>{label}</Badge>;
@@ -225,7 +225,7 @@ export default function OrdersManagement() {
     const config = {
       available: { label: 'Available', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
       reserved: { label: 'Reserved', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-      assigned: { label: 'Assigned', className: 'bg-blue-500/20 text-teal-400 border-blue-500/30' },
+      assigned: { label: 'Assigned', className: 'bg-blue-500/20 text-[#217aff] border-blue-500/30' },
       depleted: { label: 'Depleted', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
     };
     const { label, className } = config[status] || config.available;
@@ -233,33 +233,33 @@ export default function OrdersManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#020202]">
       {/* Header */}
-      <header className="border-b border-[#1a1a1a] bg-[#0a0a0a]">
+      <header className="border-b border-[#363636] bg-[#020202]">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold text-white tracking-tight">DELIVERON</span>
+            <img src="https://framerusercontent.com/images/4xMhy82Xz334ZgDkWW9tGUV0iI.png?scale-down-to=512" alt="DeliverOn" className="h-7 w-auto" />
           </div>
           <nav className="flex items-center gap-6">
-            <Link href="/admin" className="text-gray-400 hover:text-white">Dashboard</Link>
+            <Link href="/admin" className="text-[#969696] hover:text-[#f2f2f2]">Dashboard</Link>
             <button 
               onClick={() => setActiveTab('orders')}
-              className={activeTab === 'orders' ? 'text-teal-400 font-medium' : 'text-gray-400 hover:text-white'}
+              className={activeTab === 'orders' ? 'text-[#217aff] font-medium' : 'text-[#969696] hover:text-[#f2f2f2]'}
             >
               Orders
             </button>
             <button 
               onClick={() => setActiveTab('inventory')}
-              className={activeTab === 'inventory' ? 'text-teal-400 font-medium flex items-center gap-1' : 'text-gray-400 hover:text-white flex items-center gap-1'}
+              className={activeTab === 'inventory' ? 'text-[#217aff] font-medium flex items-center gap-1' : 'text-[#969696] hover:text-[#f2f2f2] flex items-center gap-1'}
             >
               <Package className="w-4 h-4" /> Inventory
               {inventoryStats?.isLow && <span className="w-2 h-2 bg-red-500 rounded-full"></span>}
             </button>
-            <Link href="/admin/pricing" className="text-gray-400 hover:text-white flex items-center gap-1">
+            <Link href="/admin/pricing" className="text-[#969696] hover:text-[#f2f2f2] flex items-center gap-1">
               <DollarSign className="w-4 h-4" /> Pricing
             </Link>
-            <div className="w-8 h-8 bg-[#1a1a1a] rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-gray-400" />
+            <div className="w-8 h-8 bg-[#363636] rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-[#969696]" />
             </div>
           </nav>
         </div>
@@ -272,14 +272,14 @@ export default function OrdersManagement() {
             <h1 className="text-2xl font-bold text-white">
               {activeTab === 'orders' ? 'Orders Management' : 'Inventory Management'}
             </h1>
-            <p className="text-gray-500">
+            <p className="text-[#727272]">
               {activeTab === 'orders' ? 'View and manage all customer orders' : 'Manage Microsoft 365 accounts'}
             </p>
           </div>
           <Button 
             variant="outline" 
             onClick={activeTab === 'orders' ? fetchOrders : fetchInventory}
-            className="border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]"
+            className="border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
@@ -290,12 +290,12 @@ export default function OrdersManagement() {
         {activeTab === 'orders' && (
           <div className="flex gap-4 mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#727272]" />
               <Input
                 placeholder="Search by order ID, email, domain..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-5 bg-[#111111] border-[#1a1a1a] text-white placeholder:text-gray-500"
+                className="pl-12 py-5 bg-[#020202] border-[#363636] text-white placeholder:text-[#727272]"
               />
             </div>
             <div className="flex gap-2">
@@ -303,8 +303,8 @@ export default function OrdersManagement() {
                 variant={statusFilter === 'all' ? 'default' : 'outline'}
                 onClick={() => setStatusFilter('all')}
                 className={statusFilter === 'all' 
-                  ? 'bg-teal-500 text-black' 
-                  : 'border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]'}
+                  ? 'bg-[#217aff] text-white' 
+                  : 'border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]'}
               >
                 All Orders
               </Button>
@@ -313,7 +313,7 @@ export default function OrdersManagement() {
                 onClick={() => setStatusFilter('pending')}
                 className={statusFilter === 'pending' 
                   ? 'bg-yellow-500 text-black' 
-                  : 'border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]'}
+                  : 'border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]'}
               >
                 <Clock className="w-4 h-4 mr-2" />
                 Awaiting
@@ -323,7 +323,7 @@ export default function OrdersManagement() {
                 onClick={() => setStatusFilter('fulfilled')}
                 className={statusFilter === 'fulfilled' 
                   ? 'bg-green-500 text-black' 
-                  : 'border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]'}
+                  : 'border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]'}
               >
                 <CheckCircle2 className="w-4 h-4 mr-2" />
                 Completed
@@ -339,14 +339,14 @@ export default function OrdersManagement() {
           <div className="col-span-2">
             <div className="space-y-3">
               {loading ? (
-                <Card className="bg-[#111111] border-[#1a1a1a]">
-                  <CardContent className="p-6 text-center text-gray-400">
+                <Card className="bg-[#020202] border-[#363636]">
+                  <CardContent className="p-6 text-center text-[#969696]">
                     Loading orders...
                   </CardContent>
                 </Card>
               ) : filteredOrders.length === 0 ? (
-                <Card className="bg-[#111111] border-[#1a1a1a]">
-                  <CardContent className="p-6 text-center text-gray-400">
+                <Card className="bg-[#020202] border-[#363636]">
+                  <CardContent className="p-6 text-center text-[#969696]">
                     No orders found
                   </CardContent>
                 </Card>
@@ -354,8 +354,8 @@ export default function OrdersManagement() {
                 filteredOrders.map((order) => (
                   <Card 
                     key={order.id} 
-                    className={`bg-[#111111] border-[#1a1a1a] cursor-pointer transition-all hover:border-teal-500/50 ${
-                      selectedOrder?.id === order.id ? 'border-teal-500 ring-1 ring-teal-500/50' : ''
+                    className={`bg-[#020202] border-[#363636] cursor-pointer transition-all hover:border-[rgba(33,122,255,0.3)] ${
+                      selectedOrder?.id === order.id ? 'border-[#217aff] ring-1 ring-[rgba(33,122,255,0.3)]' : ''
                     }`}
                     onClick={() => setSelectedOrder(order)}
                   >
@@ -386,18 +386,18 @@ export default function OrdersManagement() {
                                 {order.status === 'fulfilled' ? 'Completed' : 'Awaiting'}
                               </Badge>
                             </div>
-                            <p className="text-gray-400 text-sm">{order.email || 'No email'}</p>
-                            <p className="text-gray-500 text-xs mt-1">{formatTimeAgo(order.created_at)}</p>
+                            <p className="text-[#969696] text-sm">{order.email || 'No email'}</p>
+                            <p className="text-[#727272] text-xs mt-1">{formatTimeAgo(order.created_at)}</p>
                           </div>
                         </div>
                         <div className="text-right flex items-center gap-4">
                           <div>
                             <p className="text-white font-semibold">{order.domain_count || order.domains?.length || 0} Domain{(order.domain_count || order.domains?.length || 0) !== 1 ? 's' : ''}</p>
                             {order.total_amount > 0 && (
-                              <p className="text-gray-500 text-xs">${(order.total_amount / 100).toFixed(2)}</p>
+                              <p className="text-[#727272] text-xs">${(order.total_amount / 100).toFixed(2)}</p>
                             )}
                           </div>
-                          <ChevronRight className="w-5 h-5 text-gray-500" />
+                          <ChevronRight className="w-5 h-5 text-[#727272]" />
                         </div>
                       </div>
                     </CardContent>
@@ -410,38 +410,38 @@ export default function OrdersManagement() {
           {/* Order Detail Panel */}
           <div className="col-span-1">
             {selectedOrder ? (
-              <Card className="bg-[#111111] border-[#1a1a1a] sticky top-6">
+              <Card className="bg-[#020202] border-[#363636] sticky top-6">
                 <CardContent className="p-6">
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-4">Order Details</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Order ID</span>
+                          <span className="text-[#969696]">Order ID</span>
                           <span className="text-white font-mono text-sm">{getOrderNumber(selectedOrder.id)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Email</span>
+                          <span className="text-[#969696]">Email</span>
                           <span className="text-white text-sm">{selectedOrder.email}</span>
                         </div>
                         {selectedOrder.phone && (
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Phone</span>
+                            <span className="text-[#969696]">Phone</span>
                             <span className="text-white text-sm">{selectedOrder.phone}</span>
                           </div>
                         )}
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Domains</span>
+                          <span className="text-[#969696]">Domains</span>
                           <span className="text-white">{selectedOrder.domain_count || selectedOrder.domains?.length || 0}</span>
                         </div>
                         {selectedOrder.total_amount > 0 && (
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Amount Paid</span>
+                            <span className="text-[#969696]">Amount Paid</span>
                             <span className="text-green-400 font-semibold">${(selectedOrder.total_amount / 100).toFixed(2)}</span>
                           </div>
                         )}
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Status</span>
+                          <span className="text-[#969696]">Status</span>
                           <Badge 
                             className={selectedOrder.status === 'fulfilled' 
                               ? 'bg-green-500/20 text-green-400' 
@@ -451,25 +451,25 @@ export default function OrdersManagement() {
                           </Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Created</span>
-                          <span className="text-gray-300 text-sm">{formatTimeAgo(selectedOrder.created_at)}</span>
+                          <span className="text-[#969696]">Created</span>
+                          <span className="text-[#969696] text-sm">{formatTimeAgo(selectedOrder.created_at)}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Domains List */}
                     {selectedOrder.domains?.length > 0 && (
-                      <div className="pt-4 border-t border-[#1f2937]">
-                        <h4 className="text-sm font-medium text-gray-400 mb-3">Domains</h4>
+                      <div className="pt-4 border-t border-[#363636]">
+                        <h4 className="text-sm font-medium text-[#969696] mb-3">Domains</h4>
                         <div className="space-y-2">
                           {selectedOrder.domains.map((domain, idx) => {
                             const domainName = typeof domain === 'string' ? domain : domain?.domain;
                             const forwardingUrl = typeof domain === 'object' ? domain?.forwardingUrl : null;
                             return (
-                              <div key={idx} className="bg-[#0a0a0a] p-2 rounded">
-                                <code className="text-sm text-teal-400">{domainName}</code>
+                              <div key={idx} className="bg-[#020202] p-2 rounded">
+                                <code className="text-sm text-[#217aff]">{domainName}</code>
                                 {forwardingUrl && (
-                                  <div className="text-xs text-gray-500 mt-1">→ {forwardingUrl}</div>
+                                  <div className="text-xs text-[#727272] mt-1">→ {forwardingUrl}</div>
                                 )}
                               </div>
                             );
@@ -479,13 +479,13 @@ export default function OrdersManagement() {
                     )}
 
                     {/* Fulfillment Status */}
-                    <div className="pt-4 border-t border-[#1f2937]">
-                      <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                    <div className="pt-4 border-t border-[#363636]">
+                      <h4 className="text-sm font-medium text-[#969696] mb-3 flex items-center gap-2">
                         <Server className="w-4 h-4" /> Fulfillment Status
                       </h4>
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-400">Status</span>
+                          <span className="text-[#969696]">Status</span>
                           {getFulfillmentStatusBadge(selectedOrder.fulfillment_status)}
                         </div>
                         {selectedOrder.fulfillment_error && (
@@ -518,20 +518,20 @@ export default function OrdersManagement() {
                       if (allNameservers.length === 0) return null;
                       
                       return (
-                        <div className="pt-4 border-t border-[#1f2937]">
-                          <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                        <div className="pt-4 border-t border-[#363636]">
+                          <h4 className="text-sm font-medium text-[#969696] mb-3 flex items-center gap-2">
                             <Globe className="w-4 h-4" /> Nameservers
                           </h4>
                           <div className="space-y-2">
                             {allNameservers.map((ns, idx) => (
-                              <div key={idx} className="flex items-center justify-between bg-[#0a0a0a] p-2 rounded">
-                                <code className="text-sm text-teal-400">{ns}</code>
+                              <div key={idx} className="flex items-center justify-between bg-[#020202] p-2 rounded">
+                                <code className="text-sm text-[#217aff]">{ns}</code>
                               </div>
                             ))}
                             <Button
                               variant="outline"
                               size="sm"
-                              className="w-full mt-2 border-[#1f2937] text-gray-300 hover:text-white"
+                              className="w-full mt-2 border-[#363636] text-[#969696] hover:text-[#f2f2f2]"
                               onClick={() => copyToClipboard(allNameservers.join('\n'), 'nameservers')}
                             >
                               <Copy className="w-3 h-3 mr-2" />
@@ -544,11 +544,11 @@ export default function OrdersManagement() {
 
                     {/* Fulfillment Results - Domain Mapping */}
                     {selectedOrder.fulfillment_results?.length > 0 && (
-                      <div className="pt-4 border-t border-[#1f2937]">
-                        <h4 className="text-sm font-medium text-gray-400 mb-3">Domain Fulfillment</h4>
+                      <div className="pt-4 border-t border-[#363636]">
+                        <h4 className="text-sm font-medium text-[#969696] mb-3">Domain Fulfillment</h4>
                         <div className="space-y-3">
                           {selectedOrder.fulfillment_results.map((result, idx) => (
-                            <div key={idx} className="bg-[#0a0a0a] p-3 rounded-lg space-y-2">
+                            <div key={idx} className="bg-[#020202] p-3 rounded-lg space-y-2">
                               <div className="flex items-center justify-between">
                                 <span className="text-white font-medium text-sm">{result.domain}</span>
                                 <Badge 
@@ -562,11 +562,11 @@ export default function OrdersManagement() {
                               </div>
                               {result.msAccountEmail && (
                                 <div className="flex items-center gap-2 text-xs">
-                                  <span className="text-gray-500">MS Account:</span>
-                                  <code className="text-teal-400">{result.msAccountEmail}</code>
+                                  <span className="text-[#727272]">MS Account:</span>
+                                  <code className="text-[#217aff]">{result.msAccountEmail}</code>
                                   <button 
                                     onClick={() => copyToClipboard(result.msAccountEmail, `ms-${idx}`)}
-                                    className="text-gray-500 hover:text-white"
+                                    className="text-[#727272] hover:text-[#f2f2f2]"
                                   >
                                     <Copy className="w-3 h-3" />
                                   </button>
@@ -575,13 +575,13 @@ export default function OrdersManagement() {
                               )}
                               {result.plugsaasOrderId && (
                                 <div className="flex items-center gap-2 text-xs">
-                                  <span className="text-gray-500">Scalesends ID:</span>
+                                  <span className="text-[#727272]">Scalesends ID:</span>
                                   <code className="text-purple-400">{result.plugsaasOrderId}</code>
                                   <a 
                                     href={`https://cloud.infra.email/#/orders/${result.plugsaasOrderId}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-500 hover:text-white"
+                                    className="text-[#727272] hover:text-[#f2f2f2]"
                                   >
                                     <ExternalLink className="w-3 h-3" />
                                   </a>
@@ -589,7 +589,7 @@ export default function OrdersManagement() {
                               )}
                               {result.dns_status && (
                                 <div className="flex items-center gap-2 text-xs">
-                                  <span className="text-gray-500">DNS:</span>
+                                  <span className="text-[#727272]">DNS:</span>
                                   <Badge 
                                     variant="outline" 
                                     className={result.dns_status === 'verified' 
@@ -610,17 +610,17 @@ export default function OrdersManagement() {
                     )}
 
                     {selectedOrder.stripe_customer_id && (
-                      <div className="pt-4 border-t border-[#1f2937]">
-                        <h4 className="text-sm font-medium text-gray-400 mb-2">Stripe Info</h4>
-                        <p className="text-gray-500 text-xs font-mono break-all">Customer: {selectedOrder.stripe_customer_id}</p>
+                      <div className="pt-4 border-t border-[#363636]">
+                        <h4 className="text-sm font-medium text-[#969696] mb-2">Stripe Info</h4>
+                        <p className="text-[#727272] text-xs font-mono break-all">Customer: {selectedOrder.stripe_customer_id}</p>
                         {selectedOrder.stripe_subscription_id && (
-                          <p className="text-gray-500 text-xs font-mono break-all mt-1">Sub: {selectedOrder.stripe_subscription_id}</p>
+                          <p className="text-[#727272] text-xs font-mono break-all mt-1">Sub: {selectedOrder.stripe_subscription_id}</p>
                         )}
                       </div>
                     )}
 
                     {/* Action Buttons */}
-                    <div className="pt-4 border-t border-[#1f2937] space-y-2">
+                    <div className="pt-4 border-t border-[#363636] space-y-2">
                       {(selectedOrder.fulfillment_status === 'failed' || selectedOrder.fulfillment_status === 'partial') && (
                         <Button 
                           className="w-full bg-orange-600 hover:bg-orange-700 text-white"
@@ -655,8 +655,8 @@ export default function OrdersManagement() {
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-[#111111] border-[#1a1a1a]">
-                <CardContent className="p-6 text-center text-gray-400">
+              <Card className="bg-[#020202] border-[#363636]">
+                <CardContent className="p-6 text-center text-[#969696]">
                   Select an order to view details
                 </CardContent>
               </Card>
@@ -669,34 +669,34 @@ export default function OrdersManagement() {
             {/* Inventory Stats */}
             {inventoryStats && (
               <div className="grid grid-cols-5 gap-4">
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-[#020202] border-[#363636]">
                   <CardContent className="p-4">
                     <div className="text-2xl font-bold text-white">{inventoryStats.total}</div>
-                    <div className="text-sm text-gray-400">Total</div>
+                    <div className="text-sm text-[#969696]">Total</div>
                   </CardContent>
                 </Card>
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-[#020202] border-[#363636]">
                   <CardContent className="p-4">
                     <div className="text-2xl font-bold text-green-400">{inventoryStats.available}</div>
-                    <div className="text-sm text-gray-400">Available</div>
+                    <div className="text-sm text-[#969696]">Available</div>
                   </CardContent>
                 </Card>
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-[#020202] border-[#363636]">
                   <CardContent className="p-4">
                     <div className="text-2xl font-bold text-yellow-400">{inventoryStats.reserved}</div>
-                    <div className="text-sm text-gray-400">Reserved</div>
+                    <div className="text-sm text-[#969696]">Reserved</div>
                   </CardContent>
                 </Card>
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-[#020202] border-[#363636]">
                   <CardContent className="p-4">
-                    <div className="text-2xl font-bold text-teal-400">{inventoryStats.assigned}</div>
-                    <div className="text-sm text-gray-400">Assigned</div>
+                    <div className="text-2xl font-bold text-[#217aff]">{inventoryStats.assigned}</div>
+                    <div className="text-sm text-[#969696]">Assigned</div>
                   </CardContent>
                 </Card>
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-[#020202] border-[#363636]">
                   <CardContent className="p-4">
                     <div className="text-2xl font-bold text-red-400">{inventoryStats.depleted}</div>
-                    <div className="text-sm text-gray-400">Depleted</div>
+                    <div className="text-sm text-[#969696]">Depleted</div>
                   </CardContent>
                 </Card>
               </div>
@@ -716,10 +716,10 @@ export default function OrdersManagement() {
             )}
 
             {/* CSV Upload Section */}
-            <Card className="bg-[#111827] border-[#1f2937]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <Upload className="w-5 h-5 text-teal-400" />
+                  <Upload className="w-5 h-5 text-[#217aff]" />
                   Add Microsoft 365 Accounts
                 </h3>
                 <div className="space-y-4">
@@ -729,7 +729,7 @@ export default function OrdersManagement() {
                       accept=".csv"
                       onChange={handleCsvUpload}
                       disabled={uploading}
-                      className="bg-[#0a0a0a] border-[#1f2937] text-white"
+                      className="bg-[#020202] border-[#363636] text-white"
                     />
                     <Button
                       variant="outline"
@@ -742,19 +742,19 @@ export default function OrdersManagement() {
                         a.download = 'inventory-template.csv';
                         a.click();
                       }}
-                      className="border-[#1f2937] text-gray-300 hover:text-white whitespace-nowrap"
+                      className="border-[#363636] text-[#969696] hover:text-[#f2f2f2] whitespace-nowrap"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Template
                     </Button>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400 mb-2">Or paste CSV data:</p>
+                    <p className="text-sm text-[#969696] mb-2">Or paste CSV data:</p>
                     <Textarea
                       value={csvText}
                       onChange={(e) => setCsvText(e.target.value)}
                       placeholder="email,password,notes&#10;account@outlook.com,password123,"
-                      className="bg-[#0a0a0a] border-[#1f2937] text-white font-mono text-sm"
+                      className="bg-[#020202] border-[#363636] text-white font-mono text-sm"
                       rows={4}
                       disabled={uploading}
                     />
@@ -767,7 +767,7 @@ export default function OrdersManagement() {
                     </Button>
                   </div>
                   {uploadMessage && (
-                    <div className={`p-3 rounded-lg text-sm ${uploadMessage.includes('✅') ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                    <div className={`p-3 rounded-lg text-sm ${uploadMessage.includes('✅') ? 'bg-green-500/10 text-[#727272]' : 'bg-red-500/10 text-red-400'}`}>
                       {uploadMessage}
                     </div>
                   )}
@@ -776,39 +776,39 @@ export default function OrdersManagement() {
             </Card>
 
             {/* Inventory Table */}
-            <Card className="bg-[#111827] border-[#1f2937]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Inventory ({inventory.length})</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-[#1f2937]">
-                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Email</th>
-                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
-                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Customer</th>
-                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Domain</th>
-                        <th className="text-left py-3 px-4 text-gray-400 font-medium">Assigned</th>
+                      <tr className="border-b border-[#363636]">
+                        <th className="text-left py-3 px-4 text-[#969696] font-medium">Email</th>
+                        <th className="text-left py-3 px-4 text-[#969696] font-medium">Status</th>
+                        <th className="text-left py-3 px-4 text-[#969696] font-medium">Customer</th>
+                        <th className="text-left py-3 px-4 text-[#969696] font-medium">Domain</th>
+                        <th className="text-left py-3 px-4 text-[#969696] font-medium">Assigned</th>
                       </tr>
                     </thead>
                     <tbody>
                       {inventoryLoading ? (
                         <tr>
-                          <td colSpan="5" className="text-center py-8 text-gray-500">Loading...</td>
+                          <td colSpan="5" className="text-center py-8 text-[#727272]">Loading...</td>
                         </tr>
                       ) : inventory.length === 0 ? (
                         <tr>
-                          <td colSpan="5" className="text-center py-8 text-gray-500">No inventory. Upload CSV to add accounts.</td>
+                          <td colSpan="5" className="text-center py-8 text-[#727272]">No inventory. Upload CSV to add accounts.</td>
                         </tr>
                       ) : (
                         inventory.map((item) => (
-                          <tr key={item.id} className="border-b border-[#1f2937]/50 hover:bg-[#1f2937]/30">
+                          <tr key={item.id} className="border-b border-[#363636]/50 hover:bg-[#1f2937]/30">
                             <td className="py-3 px-4">
-                              <code className="text-sm text-teal-400">{item.email}</code>
+                              <code className="text-sm text-[#217aff]">{item.email}</code>
                             </td>
                             <td className="py-3 px-4">{getStatusBadge(item.status)}</td>
-                            <td className="py-3 px-4 text-sm text-gray-300">{item.customer_email || '-'}</td>
-                            <td className="py-3 px-4 text-sm text-gray-300">{item.domain || '-'}</td>
-                            <td className="py-3 px-4 text-sm text-gray-400">
+                            <td className="py-3 px-4 text-sm text-[#969696]">{item.customer_email || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-[#969696]">{item.domain || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-[#969696]">
                               {item.assigned_date ? new Date(item.assigned_date).toLocaleDateString() : '-'}
                             </td>
                           </tr>

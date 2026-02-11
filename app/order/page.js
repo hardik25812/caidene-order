@@ -1,37 +1,28 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
-  Check,
-  Mail,
-  Shield,
-  Zap,
-  Clock,
-  Users,
   Plus,
   Trash2,
-  Upload,
-  FileSpreadsheet,
-  ArrowRight,
   Globe,
-  Server,
-  Sparkles,
-  ChevronRight,
-  Star,
-  TrendingUp
+  FileSpreadsheet,
 } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 export default function OrderPage() {
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [orderMode, setOrderMode] = useState('single');
   const fileInputRef = useRef(null);
+  const revealRefs = useRef([]);
 
   const [domainEntries, setDomainEntries] = useState([
     {
@@ -44,6 +35,20 @@ export default function OrderPage() {
   const [csvData, setCsvData] = useState(null);
   const [csvFileName, setCsvFileName] = useState('');
   const [pricePerDomain, setPricePerDomain] = useState(49);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+      setUser(session.user);
+      setEmail(session.user.email);
+      setAuthLoading(false);
+    };
+    checkSession();
+  }, [router]);
 
   useEffect(() => {
     const fetchPricing = async () => {
@@ -59,6 +64,20 @@ export default function OrderPage() {
     };
     fetchPricing();
   }, []);
+
+  useEffect(() => {
+    if (authLoading) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, [authLoading]);
 
   const totalPrice = pricePerDomain * (orderMode === 'bulk' && csvData ? csvData.length : domainEntries.length);
 
@@ -198,6 +217,7 @@ export default function OrderPage() {
           phone,
           domains: orderData,
           domainCount: orderData.length,
+          user_id: user?.id || null,
         }),
       });
 
@@ -216,248 +236,145 @@ export default function OrderPage() {
   };
 
   const features = [
-    { text: '100 Microsoft inboxes per domain', icon: Mail },
-    { text: '15,000 emails per domain monthly', icon: TrendingUp },
-    { text: 'Full DNS authentication (SPF, DKIM, DMARC)', icon: Shield },
-    { text: 'Custom tracking domains', icon: Globe },
-    { text: 'Sequencer integration included', icon: Zap },
-    { text: '24/7 WhatsApp support', icon: Users },
+    '100 Microsoft inboxes per domain',
+    '15,000 emails per domain monthly',
+    'Full DNS authentication (SPF, DKIM, DMARC)',
+    'Custom tracking domains',
+    'Sequencer integration included',
+    '24/7 WhatsApp support',
   ];
 
+  const domainCount = orderMode === 'bulk' && csvData ? csvData.length : domainEntries.length;
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#020202] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-[rgba(33,122,255,0.1)] border border-[rgba(33,122,255,0.15)] flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-[#217aff]/30 border-t-[#217aff] rounded-full animate-spin" />
+          </div>
+          <p className="font-body text-sm font-medium text-[#727272]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
-      {/* Navigation Header */}
-      <header className="bg-[#0a0a0a] border-b border-[#1a1a1a]">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/order" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-white tracking-tight">DELIVERON</span>
+    <div className="min-h-screen bg-[#020202]">
+      {/* Header — fixed, frosted glass */}
+      <header className="fixed top-0 left-0 right-0 h-[72px] z-50 do-header-glass border-b border-[#363636]">
+        <div className="flex items-center justify-between h-full max-w-[1200px] mx-auto px-6">
+          <Link href="/order" aria-label="DeliverOn home">
+            <img src="https://framerusercontent.com/images/4xMhy82Xz334ZgDkWW9tGUV0iI.png?scale-down-to=512" alt="DeliverOn logo" className="h-9 w-auto" />
           </Link>
           <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-sm text-gray-400 hover:text-white transition-colors font-medium px-3 py-2"
-            >
-              Sign In
-            </Link>
-            <Link href="/dashboard">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#151515]"
-              >
-                Dashboard
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
+            <span className="font-mono text-[0.75rem] text-[#969696] hidden sm:inline">{user?.email}</span>
+            <Link href="/dashboard" className="do-btn do-btn--secondary do-btn--small">Dashboard</Link>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="container mx-auto px-6 pt-16 pb-12">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 px-4 py-2 rounded-full text-sm text-teal-400 mb-8 animate-fade-in">
-              <Sparkles className="w-4 h-4" />
-              <span className="font-medium">Enterprise-Grade Infrastructure</span>
+      {/* Main Content */}
+      <main className="pt-[calc(72px+3rem)] max-w-[1200px] mx-auto px-6 pb-16">
+
+        {/* Hero */}
+        <div ref={(el) => (revealRefs.current[0] = el)} className="do-reveal text-center mb-12">
+          <h1 className="font-heading text-[clamp(1.75rem,4vw,2.75rem)] font-bold tracking-[-0.03em] text-[#f2f2f2] mb-4">
+            Cold Email Infrastructure Built for Scale
+          </h1>
+          <p className="font-body text-[clamp(0.875rem,1.5vw,1.125rem)] text-[#969696] max-w-[600px] mx-auto leading-[1.7]">
+            Dedicated Microsoft inboxes with full DNS authentication. 100 inboxes per domain, warmed and ready to send.
+          </p>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          {[
+            { value: '100', label: 'Inboxes/Domain' },
+            { value: '15K', label: 'Monthly Emails' },
+            { value: '48h', label: 'Setup Time' },
+            { value: '24/7', label: 'Support' },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              ref={(el) => (revealRefs.current[i + 1] = el)}
+              className={`do-reveal do-reveal-delay-${i + 1} bg-[#020202] border border-[#363636] rounded-xl p-6 text-center shadow-glow-blue transition-all hover:border-[rgba(33,122,255,0.3)] hover:-translate-y-0.5`}
+            >
+              <div className="font-mono text-2xl font-semibold text-[#217aff] mb-1">{stat.value}</div>
+              <div className="font-body text-[0.75rem] text-[#969696]">{stat.label}</div>
             </div>
+          ))}
+        </div>
 
-            {/* Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight animate-fade-in-up">
-              Cold Email Infrastructure
-              <br />
-              <span className="gradient-text">Built for Scale</span>
-            </h1>
+        {/* Two-Column Grid: Form + Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
 
-            {/* Subheading */}
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up">
-              Dedicated Microsoft inboxes with full DNS authentication. 100 inboxes per domain, warmed and ready to send.
+          {/* LEFT: Order Form Card */}
+          <div ref={(el) => (revealRefs.current[5] = el)} className="do-reveal bg-[#020202] border border-[#363636] rounded-[20px] p-8 lg:p-12 shadow-glow-white">
+            <h2 className="font-heading text-[1.25rem] font-bold tracking-[-0.03em] text-[#f2f2f2] mb-2">Configure Your Order</h2>
+            <p className="font-body text-[0.8125rem] text-[#969696] mb-8">
+              <strong className="text-[#217aff] font-semibold">${pricePerDomain}</strong> per domain, full infrastructure included
             </p>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto stagger-children">
-              {[
-                { value: '100', label: 'Inboxes/Domain' },
-                { value: '15K', label: 'Monthly Emails' },
-                { value: '48h', label: 'Setup Time' },
-                { value: '24/7', label: 'Support' },
-              ].map((stat, i) => (
-                <div key={i} className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-white">{stat.value}</div>
-                  <div className="text-xs text-gray-500 mt-1 font-medium">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Order Form Section */}
-      <section className="container mx-auto max-w-4xl px-6 pb-20">
-        <div className="bg-[#111111] border border-[#1a1a1a] rounded-2xl overflow-hidden">
-          {/* Card Header */}
-          <div className="px-6 py-5 border-b border-[#1a1a1a] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-semibold text-white">Configure Your Order</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                <span className="text-teal-400 font-semibold">${pricePerDomain}</span> per domain, full infrastructure included
-              </p>
-            </div>
-            <div className="flex gap-1 p-1 bg-[#0a0a0a] rounded-lg border border-[#1a1a1a]">
-              <button
-                onClick={() => setOrderMode('single')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                  orderMode === 'single'
-                    ? 'bg-teal-500 text-black'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Manual Entry
-              </button>
-              <button
-                onClick={() => setOrderMode('bulk')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${
-                  orderMode === 'bulk'
-                    ? 'bg-teal-500 text-black'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Upload className="w-4 h-4" />
-                Bulk CSV
-              </button>
-            </div>
-          </div>
-
-          {/* Card Content */}
-          <div className="p-6 space-y-8">
-            {/* Step 1: Contact Info */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-full bg-teal-500 flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">1</span>
-                </div>
-                <h3 className="text-sm font-semibold text-white">Contact Information</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-400">
-                    Email Address <span className="text-teal-400">*</span>
-                  </Label>
-                  <Input
-                    type="email"
-                    placeholder="you@company.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="h-11 bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500 focus:ring-teal-500/20"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-400">
-                    Phone Number <span className="text-gray-500">(optional)</span>
-                  </Label>
-                  <Input
-                    type="tel"
-                    placeholder="+1 (555) 000-0000"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="h-11 bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500 focus:ring-teal-500/20"
-                  />
-                </div>
-              </div>
+            {/* Tabs */}
+            <div className="do-tabs mb-8">
+              <button className={`do-tab ${orderMode === 'single' ? 'active' : ''}`} onClick={() => setOrderMode('single')}>Manual Entry</button>
+              <button className={`do-tab ${orderMode === 'bulk' ? 'active' : ''}`} onClick={() => setOrderMode('bulk')}>Bulk CSV</button>
             </div>
 
-            {/* Step 2: Domain Configuration */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-teal-500 flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">2</span>
+            {orderMode === 'single' ? (
+              <>
+                {/* Contact Information */}
+                <div className="mb-8">
+                  <h3 className="font-body text-[0.8125rem] font-semibold text-[#f2f2f2] uppercase tracking-[0.08em] mb-6 pb-3 border-b border-[#363636]">Contact Information</h3>
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block font-body text-[0.8125rem] font-medium text-[#969696] mb-2">Email Address <span className="text-[#217aff]">*</span></label>
+                      <input type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="do-form-input" required />
+                    </div>
+                    <div>
+                      <label className="block font-body text-[0.8125rem] font-medium text-[#969696] mb-2">Phone Number (optional)</label>
+                      <input type="tel" placeholder="+1 (555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} className="do-form-input" />
+                    </div>
                   </div>
-                  <h3 className="text-sm font-semibold text-white">
-                    {orderMode === 'single' ? 'Domain Configuration' : 'Bulk Upload'}
-                  </h3>
-                  {orderMode === 'single' && (
-                    <span className="text-xs text-gray-500 bg-[#111111] px-2 py-1 rounded-full">
-                      {domainEntries.length} domain{domainEntries.length > 1 ? 's' : ''}
-                    </span>
-                  )}
                 </div>
-                {orderMode === 'single' && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={addDomainEntry}
-                    className="h-8 border-teal-500/30 text-teal-400 hover:bg-teal-500/10 hover:border-teal-500/50"
-                  >
-                    <Plus className="w-4 h-4 mr-1.5" />
-                    Add Domain
-                  </Button>
-                )}
-              </div>
 
-              <div className="pl-10">
-                {orderMode === 'single' ? (
+                {/* Domain Configuration */}
+                <div className="mb-8">
+                  <h3 className="font-body text-[0.8125rem] font-semibold text-[#f2f2f2] uppercase tracking-[0.08em] mb-6 pb-3 border-b border-[#363636]">Domain Configuration</h3>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="font-mono text-[0.8125rem] font-medium text-[#969696]">{domainEntries.length} domain{domainEntries.length > 1 ? 's' : ''}</span>
+                    <button onClick={addDomainEntry} className="do-btn do-btn--secondary do-btn--small">
+                      <span className="material-symbols-outlined text-base">add</span>
+                      Add Domain
+                    </button>
+                  </div>
+
                   <div className="space-y-4">
                     {domainEntries.map((entry, domainIndex) => (
-                      <div
-                        key={domainIndex}
-                        className="rounded-xl bg-[#0a0a0a] border border-[#1a1a1a] p-5 space-y-5 hover:border-[#2a2a2a] transition-colors"
-                      >
+                      <div key={domainIndex} className="bg-[#020202] border border-[#363636] rounded-xl p-6 space-y-6">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Globe className="w-4 h-4 text-teal-400" />
-                            <span className="text-sm font-medium text-white">Domain {domainIndex + 1}</span>
-                          </div>
+                          <span className="font-body text-[0.875rem] font-semibold text-[#f2f2f2]">Domain {domainIndex + 1}</span>
                           {domainEntries.length > 1 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeDomainEntry(domainIndex)}
-                              className="h-8 w-8 p-0 text-gray-500 hover:text-red-400 hover:bg-red-500/10"
-                            >
+                            <Button variant="ghost" size="sm" onClick={() => removeDomainEntry(domainIndex)} className="h-8 w-8 p-0 text-[#727272] hover:text-[#ff4d4d] hover:bg-[rgba(255,77,77,0.1)]">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           )}
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label className="text-xs font-medium text-gray-400">
-                              Domain Name <span className="text-teal-400">*</span>
-                            </Label>
-                            <Input
-                              placeholder="example.com"
-                              value={entry.domain}
-                              onChange={(e) => updateDomainEntry(domainIndex, 'domain', e.target.value)}
-                              className="h-10 bg-[#080808] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-xs font-medium text-gray-400">
-                              Forwarding URL <span className="text-teal-400">*</span>
-                            </Label>
-                            <Input
-                              placeholder="https://yourwebsite.com"
-                              value={entry.forwardingUrl}
-                              onChange={(e) => updateDomainEntry(domainIndex, 'forwardingUrl', e.target.value)}
-                              className="h-10 bg-[#080808] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500"
-                            />
-                          </div>
+                        <div>
+                          <label className="block font-body text-[0.8125rem] font-medium text-[#969696] mb-2">Domain Name <span className="text-[#217aff]">*</span></label>
+                          <input placeholder="yourdomain.com" value={entry.domain} onChange={(e) => updateDomainEntry(domainIndex, 'domain', e.target.value)} className="do-form-input" required />
                         </div>
-
-                        {/* Names Section */}
-                        <div className="space-y-3 pt-2">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs font-medium text-gray-400">
-                              Inbox Names <span className="text-gray-500">(1-3 required)</span>
-                            </Label>
+                        <div>
+                          <label className="block font-body text-[0.8125rem] font-medium text-[#969696] mb-2">Forwarding URL <span className="text-[#217aff]">*</span></label>
+                          <input type="url" placeholder="https://yoursite.com" value={entry.forwardingUrl} onChange={(e) => updateDomainEntry(domainIndex, 'forwardingUrl', e.target.value)} className="do-form-input" required />
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="font-body text-[0.8125rem] font-medium text-[#969696]">Inbox Names (1-3 required)</label>
                             {entry.names.length < 3 && (
-                              <button
-                                onClick={() => addName(domainIndex)}
-                                className="text-xs text-teal-400 hover:text-teal-300 font-medium flex items-center gap-1"
-                              >
-                                <Plus className="w-3 h-3" />
+                              <button onClick={() => addName(domainIndex)} className="do-btn do-btn--secondary do-btn--small">
+                                <span className="material-symbols-outlined text-base">add</span>
                                 Add Name
                               </button>
                             )}
@@ -465,25 +382,10 @@ export default function OrderPage() {
                           <div className="space-y-2">
                             {entry.names.map((name, nameIndex) => (
                               <div key={nameIndex} className="flex gap-3 items-center">
-                                <Input
-                                  placeholder="First Name"
-                                  value={name.firstName}
-                                  onChange={(e) => updateName(domainIndex, nameIndex, 'firstName', e.target.value)}
-                                  className="h-9 bg-[#080808] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500 text-sm"
-                                />
-                                <Input
-                                  placeholder="Last Name"
-                                  value={name.lastName}
-                                  onChange={(e) => updateName(domainIndex, nameIndex, 'lastName', e.target.value)}
-                                  className="h-9 bg-[#080808] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500 text-sm"
-                                />
+                                <input placeholder="First Name" value={name.firstName} onChange={(e) => updateName(domainIndex, nameIndex, 'firstName', e.target.value)} className="do-form-input" />
+                                <input placeholder="Last Name" value={name.lastName} onChange={(e) => updateName(domainIndex, nameIndex, 'lastName', e.target.value)} className="do-form-input" />
                                 {entry.names.length > 1 && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => removeName(domainIndex, nameIndex)}
-                                    className="h-9 w-9 p-0 text-gray-500 hover:text-red-400 hover:bg-red-500/10 flex-shrink-0"
-                                  >
+                                  <Button variant="ghost" size="sm" onClick={() => removeName(domainIndex, nameIndex)} className="h-[44px] w-[44px] p-0 text-[#727272] hover:text-[#ff4d4d] hover:bg-[rgba(255,77,77,0.1)] flex-shrink-0">
                                     <Trash2 className="w-4 h-4" />
                                   </Button>
                                 )}
@@ -494,172 +396,148 @@ export default function OrderPage() {
                       </div>
                     ))}
                   </div>
-                ) : (
-                  /* Bulk CSV Upload */
-                  <div className="space-y-4">
-                    <div className="rounded-xl bg-[#0a0a0a] border-2 border-dashed border-[#1a1a1a] p-8 text-center hover:border-teal-500/40 transition-colors">
-                      <input
-                        type="file"
-                        accept=".csv"
-                        onChange={handleCsvUpload}
-                        ref={fileInputRef}
-                        className="hidden"
-                        id="csv-upload"
-                      />
-                      {!csvData ? (
-                        <label htmlFor="csv-upload" className="cursor-pointer block">
-                          <div className="w-14 h-14 bg-[#111111] rounded-xl flex items-center justify-center mx-auto mb-4">
-                            <FileSpreadsheet className="w-7 h-7 text-gray-500" />
-                          </div>
-                          <p className="text-white font-medium mb-1">Drop your CSV file here</p>
-                          <p className="text-gray-500 text-sm mb-4">or click to browse</p>
-                          <div className="inline-block p-3 bg-[#080808] rounded-lg border border-[#1a1a1a]">
-                            <code className="text-gray-500 text-xs font-mono">
-                              domain, forwarding, firstname1, lastname1, ...
-                            </code>
-                          </div>
-                        </label>
-                      ) : (
-                        <div>
-                          <div className="w-14 h-14 bg-emerald-500/15 rounded-xl flex items-center justify-center mx-auto mb-4">
-                            <FileSpreadsheet className="w-7 h-7 text-emerald-400" />
-                          </div>
-                          <p className="text-white font-medium">{csvFileName}</p>
-                          <p className="text-emerald-400 text-sm mt-1">{csvData.length} domains loaded</p>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={clearCsv}
-                            className="mt-4 border-[#2a2a2a] text-gray-500 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Remove File
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+                </div>
+              </>
+            ) : (
+              /* Bulk CSV Upload */
+              <div className="mb-8">
+                <h3 className="font-body text-[0.8125rem] font-semibold text-[#f2f2f2] uppercase tracking-[0.08em] mb-6 pb-3 border-b border-[#363636]">Upload CSV</h3>
 
-                    {csvData && csvData.length > 0 && (
-                      <div className="rounded-xl bg-[#0a0a0a] border border-[#1a1a1a] p-4 max-h-48 overflow-y-auto">
-                        <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">Preview</p>
-                        <div className="space-y-2">
-                          {csvData.slice(0, 5).map((entry, i) => (
-                            <div key={i} className="text-sm py-2 px-3 bg-[#080808] rounded-lg flex items-center gap-2">
-                              <Globe className="w-4 h-4 text-teal-400 flex-shrink-0" />
-                              <span className="text-teal-300 font-medium">{entry.domain}</span>
-                              <span className="text-gray-700">→</span>
-                              <span className="text-gray-500 truncate">{entry.forwardingUrl || 'No forwarding'}</span>
-                            </div>
-                          ))}
-                        </div>
-                        {csvData.length > 5 && (
-                          <p className="text-gray-500 text-xs mt-3 text-center">+ {csvData.length - 5} more domains</p>
-                        )}
+                {/* Contact info for bulk too */}
+                <div className="space-y-6 mb-8">
+                  <div>
+                    <label className="block font-body text-[0.8125rem] font-medium text-[#969696] mb-2">Email Address <span className="text-[#217aff]">*</span></label>
+                    <input type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="do-form-input" required />
+                  </div>
+                </div>
+
+                <div className="border-2 border-dashed border-[#363636] rounded-xl p-12 text-center transition-colors hover:border-[#217aff]">
+                  <input type="file" accept=".csv" onChange={handleCsvUpload} ref={fileInputRef} className="hidden" id="csv-upload" />
+                  {!csvData ? (
+                    <label htmlFor="csv-upload" className="cursor-pointer block">
+                      <div className="w-14 h-14 bg-[rgba(33,122,255,0.1)] border border-[rgba(33,122,255,0.15)] rounded-[14px] flex items-center justify-center mx-auto mb-6">
+                        <span className="material-symbols-filled text-2xl text-[#217aff]">upload_file</span>
                       </div>
+                      <p className="font-body text-[0.9375rem] font-semibold text-[#f2f2f2] mb-2">Drag and drop your CSV file here</p>
+                      <p className="font-mono text-[0.75rem] text-[#727272]">or click to browse. Required columns: domain, forwarding_url, inbox_names</p>
+                      <button className="do-btn do-btn--secondary do-btn--small mt-4">
+                        <span className="material-symbols-outlined text-base">folder_open</span>
+                        Browse Files
+                      </button>
+                    </label>
+                  ) : (
+                    <div>
+                      <div className="w-14 h-14 bg-[rgba(52,211,153,0.15)] rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <FileSpreadsheet className="w-7 h-7 text-[#34d399]" />
+                      </div>
+                      <p className="font-body font-medium text-[#f2f2f2]">{csvFileName}</p>
+                      <p className="text-[#34d399] text-sm mt-1 font-mono">{csvData.length} domains loaded</p>
+                      <Button variant="outline" size="sm" onClick={clearCsv} className="mt-4 border-[#363636] text-[#727272] hover:text-[#ff4d4d] hover:border-[rgba(255,77,77,0.3)] hover:bg-[rgba(255,77,77,0.1)]">
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Remove File
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {csvData && csvData.length > 0 && (
+                  <div className="rounded-xl bg-[#020202] border border-[#363636] p-4 max-h-48 overflow-y-auto mt-4">
+                    <p className="font-body text-[#969696] text-xs font-semibold uppercase tracking-wider mb-3">Preview</p>
+                    <div className="space-y-2">
+                      {csvData.slice(0, 5).map((entry, i) => (
+                        <div key={i} className="text-sm py-2 px-3 bg-[#161616] rounded-lg flex items-center gap-2 border border-[#363636]">
+                          <Globe className="w-4 h-4 text-[#217aff] flex-shrink-0" />
+                          <span className="text-[#217aff] font-mono font-medium">{entry.domain}</span>
+                          <span className="text-[#363636]">→</span>
+                          <span className="text-[#727272] truncate font-mono">{entry.forwardingUrl || 'No forwarding'}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {csvData.length > 5 && (
+                      <p className="text-[#727272] text-xs mt-3 text-center font-mono">+ {csvData.length - 5} more domains</p>
                     )}
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Step 3: Order Summary */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-full bg-teal-500 flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">3</span>
-                </div>
-                <h3 className="text-sm font-semibold text-white">Order Summary</h3>
-              </div>
-              <div className="pl-10">
-                <div className="rounded-xl bg-gradient-to-r from-teal-500/10 to-[#0a0a0a] border border-teal-500/20 p-5">
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-sm text-gray-400">
-                        {orderMode === 'bulk' && csvData ? csvData.length : domainEntries.length} domain{(orderMode === 'bulk' && csvData ? csvData.length : domainEntries.length) > 1 ? 's' : ''} × ${pricePerDomain}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">Full infrastructure included</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total</p>
-                      <span className="text-3xl font-bold text-white">${totalPrice}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-red-400 text-xs font-bold">!</span>
-                </div>
-                <p className="text-red-400 text-sm">{error}</p>
-              </div>
             )}
+          </div>
 
-            {/* CTA Button */}
-            <Button
-              onClick={handleCheckout}
-              disabled={loading}
-              className="w-full h-12 bg-teal-500 hover:bg-teal-600 text-black text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Processing...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  Continue to Payment
-                  <ArrowRight className="w-4 h-4" />
-                </span>
+          {/* RIGHT: Sticky Sidebar */}
+          <div className="lg:sticky lg:top-[calc(72px+2rem)]">
+            {/* Order Summary */}
+            <div ref={(el) => (revealRefs.current[6] = el)} className="do-reveal do-reveal-delay-1 bg-[#020202] border border-[#363636] rounded-[20px] p-8 shadow-glow-blue mb-6">
+              <h3 className="font-heading text-[1.125rem] font-bold tracking-[-0.03em] text-[#f2f2f2] mb-6 pb-3 border-b border-[#363636]">Order Summary</h3>
+              <div className="flex items-center justify-between py-3 font-body text-[0.875rem] text-[#969696]">
+                <span>{domainCount} domain{domainCount > 1 ? 's' : ''} × ${pricePerDomain}</span>
+              </div>
+              <div className="flex items-center justify-between py-3 font-body text-[0.875rem] text-[#969696]">
+                <span>Full infrastructure included</span>
+              </div>
+              <div className="flex items-center justify-between pt-4 mt-3 border-t border-[#363636] font-body text-[#f2f2f2] font-semibold">
+                <span>Total</span>
+                <span className="font-mono text-[1.25rem] font-semibold text-[#217aff]">${totalPrice}</span>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="rounded-lg bg-[rgba(255,77,77,0.1)] border border-[rgba(255,77,77,0.2)] p-3 mt-4 flex items-center gap-2">
+                  <span className="text-[#ff4d4d] text-xs font-bold">!</span>
+                  <p className="text-[#ff4d4d] text-sm font-body">{error}</p>
+                </div>
               )}
-            </Button>
 
-            {/* Features List */}
-            <div className="pt-6 border-t border-[#1a1a1a]">
-              <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-4 text-center">What's Included</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {features.map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3 p-2 rounded-lg">
-                    <div className="w-6 h-6 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    </div>
-                    <span className="text-gray-400 text-sm">{feature.text}</span>
-                  </div>
-                ))}
+              <button
+                onClick={handleCheckout}
+                disabled={loading}
+                className="do-btn do-btn--primary w-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Processing...
+                  </span>
+                ) : (
+                  <>
+                    Continue to Payment
+                    <span className="material-symbols-outlined text-base">arrow_forward</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* What's Included */}
+            <div ref={(el) => (revealRefs.current[7] = el)} className="do-reveal do-reveal-delay-2 bg-[#020202] border border-[#363636] rounded-[20px] p-8 shadow-glow-white">
+              <h3 className="font-heading text-[1rem] font-bold tracking-[-0.03em] text-[#f2f2f2] mb-6">What&apos;s Included</h3>
+              {features.map((text, i) => (
+                <div key={i} className="flex items-center gap-3 py-2 font-body text-[0.8125rem] text-[#969696]">
+                  <span className="material-symbols-filled text-[1.25rem] text-[#217aff]">check_circle</span>
+                  {text}
+                </div>
+              ))}
+              <div className="flex items-center gap-3 py-2 font-body text-[0.8125rem] text-[#969696]">
+                <span className="material-symbols-filled text-[1.25rem] text-[#217aff]">lock</span>
+                Secure Stripe Payment
+              </div>
+              <div className="flex items-center gap-3 py-2 font-body text-[0.8125rem] text-[#969696]">
+                <span className="material-symbols-filled text-[1.25rem] text-[#217aff]">schedule</span>
+                48-Hour Setup
+              </div>
+              <div className="flex items-center gap-3 py-2 font-body text-[0.8125rem] text-[#969696]">
+                <span className="material-symbols-filled text-[1.25rem] text-[#217aff]">support_agent</span>
+                24/7 Support
               </div>
             </div>
           </div>
         </div>
-
-        {/* Trust Indicators */}
-        <div className="flex flex-wrap justify-center gap-8 mt-10">
-          {[
-            { icon: Shield, text: 'Secure Stripe Payment' },
-            { icon: Clock, text: '48-Hour Setup' },
-            { icon: Users, text: '24/7 Support' },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-2.5 text-gray-500">
-              <div className="w-8 h-8 rounded-lg bg-[#111111] border border-[#1a1a1a] flex items-center justify-center">
-                <item.icon className="w-4 h-4 text-teal-400" />
-              </div>
-              <span className="text-sm font-medium">{item.text}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#1a1a1a]">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <span className="text-sm font-medium text-gray-500">DELIVERON</span>
-            <p className="text-gray-600 text-sm">
-              © {new Date().getFullYear()} DeliverOn. All rights reserved.
-            </p>
-          </div>
+      <footer className="border-t border-[#363636] py-6 mt-16">
+        <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between">
+          <p className="text-[0.75rem] text-[#727272]">© {new Date().getFullYear()} DeliverOn. All rights reserved.</p>
+          <Link href="/order" aria-label="DeliverOn home">
+            <img src="https://framerusercontent.com/images/4xMhy82Xz334ZgDkWW9tGUV0iI.png?scale-down-to=512" alt="DeliverOn logo" className="h-[26px] w-auto" />
+          </Link>
         </div>
       </footer>
     </div>

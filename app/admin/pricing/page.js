@@ -68,20 +68,20 @@ export default function PricingManagement() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#020202]">
       {/* Header */}
-      <header className="border-b border-[#1a1a1a] bg-[#0a0a0a]">
+      <header className="border-b border-[#363636] bg-[#020202]">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/admin" className="text-gray-400 hover:text-white flex items-center gap-2">
+            <Link href="/admin" className="text-[#969696] hover:text-[#f2f2f2] flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Admin
             </Link>
             <div className="flex items-center gap-2">
-              <DollarSign className="w-6 h-6 text-teal-400" />
+              <DollarSign className="w-6 h-6 text-[#217aff]" />
               <div>
                 <h1 className="text-xl font-bold text-white">Pricing Management</h1>
-                <p className="text-gray-500 text-sm">Configure tiered pricing for inbox orders</p>
+                <p className="text-[#727272] text-sm">Configure tiered pricing for inbox orders</p>
               </div>
             </div>
           </div>
@@ -89,7 +89,7 @@ export default function PricingManagement() {
             <Button 
               variant="outline" 
               onClick={handleRefresh}
-              className="border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]"
+              className="border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
@@ -97,7 +97,7 @@ export default function PricingManagement() {
             <Button 
               onClick={handleSave}
               disabled={saving}
-              className="bg-teal-500 hover:bg-teal-600 text-black"
+              className="bg-[#217aff] hover:bg-[#1a62cc] text-white"
             >
               <Save className="w-4 h-4 mr-2" />
               {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
@@ -109,18 +109,18 @@ export default function PricingManagement() {
       <div className="container mx-auto px-6 py-8 max-w-4xl">
         <div className="space-y-6">
           {/* Landing Page Price */}
-          <Card className="bg-[#111111] border-[#1a1a1a] border-teal-500/30">
+          <Card className="bg-[#020202] border-[#363636] border-[rgba(33,122,255,0.15)]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">Landing Page Price</h3>
-                  <p className="text-gray-500 text-sm mt-1">This is the price shown to customers on the order page</p>
+                  <p className="text-[#727272] text-sm mt-1">This is the price shown to customers on the order page</p>
                 </div>
-                <Badge className="bg-teal-500 text-black">PUBLIC</Badge>
+                <Badge className="bg-[#217aff] text-white">PUBLIC</Badge>
               </div>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Price per Domain ($)</label>
+                  <label className="text-[#969696] text-sm block mb-2">Price per Domain ($)</label>
                   <Input
                     type="number"
                     step="0.01"
@@ -129,14 +129,14 @@ export default function PricingManagement() {
                       ...pricing,
                       landingPagePrice: parseFloat(e.target.value)
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white text-lg font-bold"
+                    className="bg-[#020202] border-[#363636] text-white text-lg font-bold"
                   />
-                  <p className="text-gray-600 text-xs mt-2">Displayed on the order/landing page as the per-domain price</p>
+                  <p className="text-[#727272] text-xs mt-2">Displayed on the order/landing page as the per-domain price</p>
                 </div>
                 <div className="flex items-center">
-                  <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4 w-full">
-                    <p className="text-gray-500 text-xs mb-1">Customer sees:</p>
-                    <p className="text-white text-2xl font-bold">${pricing.landingPagePrice || 0} <span className="text-sm text-gray-400 font-normal">per domain</span></p>
+                  <div className="bg-[#020202] border border-[#363636] rounded-lg p-4 w-full">
+                    <p className="text-[#727272] text-xs mb-1">Customer sees:</p>
+                    <p className="text-white text-2xl font-bold">${pricing.landingPagePrice || 0} <span className="text-sm text-[#969696] font-normal">per domain</span></p>
                   </div>
                 </div>
               </div>
@@ -144,18 +144,18 @@ export default function PricingManagement() {
           </Card>
 
           {/* SMTP Tier */}
-          <Card className="bg-[#111111] border-[#1a1a1a]">
+          <Card className="bg-[#020202] border-[#363636]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">SMTP Tier</h3>
-                  <p className="text-gray-500 text-sm mt-1">Flat rate for all SMTP orders</p>
+                  <p className="text-[#727272] text-sm mt-1">Flat rate for all SMTP orders</p>
                 </div>
                 <Badge className="bg-orange-500 text-white">SMTP</Badge>
               </div>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Price per Inbox ($)</label>
+                  <label className="text-[#969696] text-sm block mb-2">Price per Inbox ($)</label>
                   <Input
                     type="number"
                     step="0.01"
@@ -164,19 +164,19 @@ export default function PricingManagement() {
                       ...pricing,
                       smtp: { ...pricing.smtp, pricePerInbox: parseFloat(e.target.value) }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
-                  <p className="text-gray-600 text-xs mt-2">Flat rate for all SMTP inboxes</p>
+                  <p className="text-[#727272] text-xs mt-2">Flat rate for all SMTP inboxes</p>
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Description</label>
+                  <label className="text-[#969696] text-sm block mb-2">Description</label>
                   <Input
                     value={pricing.smtp.description}
                     onChange={(e) => setPricing({
                       ...pricing,
                       smtp: { ...pricing.smtp, description: e.target.value }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
                 </div>
               </div>
@@ -184,18 +184,18 @@ export default function PricingManagement() {
           </Card>
 
           {/* Basic Tier */}
-          <Card className="bg-[#111111] border-[#1a1a1a]">
+          <Card className="bg-[#020202] border-[#363636]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">BASIC Tier</h3>
-                  <p className="text-gray-500 text-sm mt-1">For orders under the threshold</p>
+                  <p className="text-[#727272] text-sm mt-1">For orders under the threshold</p>
                 </div>
-                <Badge className="bg-teal-500 text-black">BASIC</Badge>
+                <Badge className="bg-[#217aff] text-white">BASIC</Badge>
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Threshold</label>
+                  <label className="text-[#969696] text-sm block mb-2">Threshold</label>
                   <Input
                     type="number"
                     value={pricing.basic.threshold}
@@ -203,12 +203,12 @@ export default function PricingManagement() {
                       ...pricing,
                       basic: { ...pricing.basic, threshold: parseInt(e.target.value) }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
-                  <p className="text-gray-600 text-xs mt-2">Orders below this count</p>
+                  <p className="text-[#727272] text-xs mt-2">Orders below this count</p>
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Price per Inbox ($)</label>
+                  <label className="text-[#969696] text-sm block mb-2">Price per Inbox ($)</label>
                   <Input
                     type="number"
                     step="0.01"
@@ -217,18 +217,18 @@ export default function PricingManagement() {
                       ...pricing,
                       basic: { ...pricing.basic, pricePerInbox: parseFloat(e.target.value) }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Description</label>
+                  <label className="text-[#969696] text-sm block mb-2">Description</label>
                   <Input
                     value={pricing.basic.description}
                     onChange={(e) => setPricing({
                       ...pricing,
                       basic: { ...pricing.basic, description: e.target.value }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
                 </div>
               </div>
@@ -236,18 +236,18 @@ export default function PricingManagement() {
           </Card>
 
           {/* Intermediate Tier */}
-          <Card className="bg-[#111111] border-[#1a1a1a]">
+          <Card className="bg-[#020202] border-[#363636]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">INTERMEDIATE Tier</h3>
-                  <p className="text-gray-500 text-sm mt-1">For orders between thresholds</p>
+                  <p className="text-[#727272] text-sm mt-1">For orders between thresholds</p>
                 </div>
-                <Badge className="bg-cyan-500 text-black">INTERMEDIATE</Badge>
+                <Badge className="bg-[#217aff] text-white">INTERMEDIATE</Badge>
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Threshold</label>
+                  <label className="text-[#969696] text-sm block mb-2">Threshold</label>
                   <Input
                     type="number"
                     value={pricing.intermediate.threshold}
@@ -255,12 +255,12 @@ export default function PricingManagement() {
                       ...pricing,
                       intermediate: { ...pricing.intermediate, threshold: parseInt(e.target.value) }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
-                  <p className="text-gray-600 text-xs mt-2">Orders below this count</p>
+                  <p className="text-[#727272] text-xs mt-2">Orders below this count</p>
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Price per Inbox ($)</label>
+                  <label className="text-[#969696] text-sm block mb-2">Price per Inbox ($)</label>
                   <Input
                     type="number"
                     step="0.01"
@@ -269,18 +269,18 @@ export default function PricingManagement() {
                       ...pricing,
                       intermediate: { ...pricing.intermediate, pricePerInbox: parseFloat(e.target.value) }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Description</label>
+                  <label className="text-[#969696] text-sm block mb-2">Description</label>
                   <Input
                     value={pricing.intermediate.description}
                     onChange={(e) => setPricing({
                       ...pricing,
                       intermediate: { ...pricing.intermediate, description: e.target.value }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
                 </div>
               </div>
@@ -288,27 +288,27 @@ export default function PricingManagement() {
           </Card>
 
           {/* Pro Tier */}
-          <Card className="bg-[#111111] border-[#1a1a1a]">
+          <Card className="bg-[#020202] border-[#363636]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">PRO Tier</h3>
-                  <p className="text-gray-500 text-sm mt-1">For orders above the threshold</p>
+                  <p className="text-[#727272] text-sm mt-1">For orders above the threshold</p>
                 </div>
                 <Badge className="bg-purple-500 text-white">PRO</Badge>
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Threshold</label>
+                  <label className="text-[#969696] text-sm block mb-2">Threshold</label>
                   <Input
                     type="text"
                     value="No limit (+)"
                     disabled
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-gray-500"
+                    className="bg-[#020202] border-[#363636] text-[#727272]"
                   />
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Price per Inbox ($)</label>
+                  <label className="text-[#969696] text-sm block mb-2">Price per Inbox ($)</label>
                   <Input
                     type="number"
                     step="0.01"
@@ -317,18 +317,18 @@ export default function PricingManagement() {
                       ...pricing,
                       pro: { ...pricing.pro, pricePerInbox: parseFloat(e.target.value) }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-2">Description</label>
+                  <label className="text-[#969696] text-sm block mb-2">Description</label>
                   <Input
                     value={pricing.pro.description}
                     onChange={(e) => setPricing({
                       ...pricing,
                       pro: { ...pricing.pro, description: e.target.value }
                     })}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white"
+                    className="bg-[#020202] border-[#363636] text-white"
                   />
                 </div>
               </div>

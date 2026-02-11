@@ -226,8 +226,8 @@ export default function AdminDashboard() {
   // Loading state
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 animate-spin text-teal-500" />
+      <div className="min-h-screen bg-[#020202] flex items-center justify-center">
+        <RefreshCw className="w-8 h-8 animate-spin text-[#217aff]" />
       </div>
     );
   }
@@ -235,12 +235,12 @@ export default function AdminDashboard() {
   // Login screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[#111111] border-[#1a1a1a]">
+      <div className="min-h-screen bg-[#020202] flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-[#020202] border-[#363636]">
           <CardContent className="p-8">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-teal-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Lock className="w-8 h-8 text-teal-400" />
+              <div className="w-16 h-16 bg-[rgba(33,122,255,0.1)] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-8 h-8 text-[#217aff]" />
               </div>
               <h1 className="text-2xl font-bold text-white">Admin Access</h1>
               <p className="text-gray-500 mt-2">Sign in to access the admin dashboard</p>
@@ -248,32 +248,32 @@ export default function AdminDashboard() {
 
             <form onSubmit={handleEmailLogin} className="space-y-4">
               <div>
-                <Label className="text-gray-400">Email</Label>
+                <Label className="text-[#969696]">Email</Label>
                 <Input
                   type="email"
                   placeholder="admin@deliveron.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 bg-[#0a0a0a] border-[#2a2a2a] text-white placeholder:text-gray-600 focus:border-teal-500"
+                  className="mt-2 bg-[#020202] border-[#363636] text-white placeholder:text-[#727272] focus:border-[#217aff]"
                   required
                 />
               </div>
 
               <div>
-                <Label className="text-gray-400">Password</Label>
+                <Label className="text-[#969696]">Password</Label>
                 <div className="relative mt-2">
                   <Input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-[#0a0a0a] border-[#2a2a2a] text-white placeholder:text-gray-600 focus:border-teal-500 pr-10"
+                    className="bg-[#020202] border-[#363636] text-white placeholder:text-[#727272] focus:border-[#217aff] pr-10"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#727272] hover:text-[#f2f2f2]"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -289,7 +289,7 @@ export default function AdminDashboard() {
               <Button
                 type="submit"
                 disabled={signingIn}
-                className="w-full bg-teal-500 hover:bg-teal-600 text-black font-medium py-5"
+                className="w-full bg-[#217aff] hover:bg-[#1a62cc] text-white font-medium py-5"
               >
                 {signingIn ? 'Signing in...' : 'Sign In'}
               </Button>
@@ -297,10 +297,10 @@ export default function AdminDashboard() {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#2a2a2a]"></div>
+                <div className="w-full border-t border-[#363636]"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-[#111111] text-gray-500">or continue with</span>
+                <span className="px-4 bg-[#020202] text-[#727272]">or continue with</span>
               </div>
             </div>
 
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
               variant="outline"
               onClick={handleGoogleLogin}
               disabled={signingIn}
-              className="w-full border-[#2a2a2a] text-gray-300 hover:text-white hover:bg-[#1a1a1a]"
+              className="w-full border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
@@ -332,7 +332,7 @@ export default function AdminDashboard() {
               Sign in with Google
             </Button>
 
-            <p className="text-center text-gray-600 text-xs mt-6">
+            <p className="text-center text-[#727272] text-xs mt-6">
               Only authorized admin accounts can access this dashboard.
             </p>
           </CardContent>
@@ -342,44 +342,44 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex">
+    <div className="min-h-screen bg-[#020202] flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col">
-        <div className="p-5 border-b border-[#1a1a1a]">
+      <aside className="w-64 bg-[#020202] border-r border-[#363636] flex flex-col">
+        <div className="p-5 border-b border-[#363636]">
           <Link href="/admin" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-white tracking-tight">DELIVERON</span>
+            <img src="https://framerusercontent.com/images/4xMhy82Xz334ZgDkWW9tGUV0iI.png?scale-down-to=512" alt="DeliverOn" className="h-7 w-auto" />
           </Link>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-teal-500/10 text-teal-400">
+          <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[rgba(33,122,255,0.1)] text-[#217aff]">
             <Home className="w-4 h-4" />
             <span className="text-sm font-medium">Dashboard</span>
           </Link>
-          <Link href="/admin/orders" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#151515]">
+          <Link href="/admin/orders" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]">
             <Package className="w-4 h-4" />
             <span className="text-sm font-medium">Orders</span>
           </Link>
-          <Link href="/admin/pricing" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#151515]">
+          <Link href="/admin/pricing" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]">
             <DollarSign className="w-4 h-4" />
             <span className="text-sm font-medium">Pricing</span>
           </Link>
-          <Link href="/order" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#151515]">
+          <Link href="/order" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]">
             <Rocket className="w-4 h-4" />
             <span className="text-sm font-medium">New Order</span>
           </Link>
         </nav>
 
-        <div className="p-4 border-t border-[#1a1a1a]">
+        <div className="p-4 border-t border-[#363636]">
           <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 bg-teal-500/20 rounded-full flex items-center justify-center">
-              <span className="text-teal-400 text-sm font-medium">{user?.email?.[0]?.toUpperCase() || 'A'}</span>
+            <div className="w-8 h-8 bg-[rgba(33,122,255,0.15)] rounded-full flex items-center justify-center">
+              <span className="text-[#217aff] text-sm font-medium">{user?.email?.[0]?.toUpperCase() || 'A'}</span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">{user?.email?.split('@')[0] || 'Admin'}</p>
               <p className="text-xs text-gray-500 truncate">{user?.email || 'admin@deliveron.com'}</p>
             </div>
-            <button onClick={handleLogout} className="text-gray-500 hover:text-white">
+            <button onClick={handleLogout} className="text-[#727272] hover:text-[#f2f2f2]">
               <LogOut className="w-4 h-4" />
             </button>
           </div>
@@ -389,14 +389,14 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         {/* Header */}
-        <header className="bg-[#0a0a0a] border-b border-[#1a1a1a] px-6 py-4">
+        <header className="bg-[#020202] border-b border-[#363636] px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-semibold text-white">Dashboard</h1>
-              <p className="text-sm text-gray-500">Manage orders and track performance</p>
+              <p className="text-sm text-[#727272]">Manage orders and track performance</p>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" className="border-[#2a2a2a] text-gray-400 hover:text-white hover:bg-[#151515]" onClick={fetchOrders}>
+              <Button variant="outline" size="sm" className="border-[#363636] text-[#969696] hover:text-[#f2f2f2] hover:bg-[rgba(33,122,255,0.06)]" onClick={fetchOrders}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
               </Button>
@@ -407,11 +407,11 @@ export default function AdminDashboard() {
         <div className="p-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-4 gap-4 mb-6">
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-500 text-sm">Awaiting</p>
+                    <p className="text-[#969696] text-sm">Awaiting</p>
                     <p className="text-3xl font-bold text-white mt-1">{stats.awaiting}</p>
                   </div>
                   <div className="w-10 h-10 bg-orange-500/10 rounded-lg flex items-center justify-center">
@@ -421,11 +421,11 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-500 text-sm">Completed</p>
+                    <p className="text-[#969696] text-sm">Completed</p>
                     <p className="text-3xl font-bold text-white mt-1">{stats.completed}</p>
                   </div>
                   <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
@@ -435,25 +435,25 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-500 text-sm">Total Invoices</p>
+                    <p className="text-[#969696] text-sm">Total Invoices</p>
                     <p className="text-3xl font-bold text-white mt-1">{stats.totalInvoices}</p>
                   </div>
-                  <div className="w-10 h-10 bg-teal-500/10 rounded-lg flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-teal-400" />
+                  <div className="w-10 h-10 bg-[rgba(33,122,255,0.1)] rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-[#217aff]" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#111111] border-[#1a1a1a]">
+            <Card className="bg-[#020202] border-[#363636]">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-500 text-sm">Total Inboxes</p>
+                    <p className="text-[#969696] text-sm">Total Inboxes</p>
                     <p className="text-3xl font-bold text-white mt-1">{stats.totalInboxes}</p>
                   </div>
                   <div className="w-10 h-10 bg-cyan-500/10 rounded-lg flex items-center justify-center">
@@ -472,7 +472,7 @@ export default function AdminDashboard() {
                 placeholder="Search orders by ID, email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-10 bg-[#111111] border-[#1a1a1a] text-white placeholder:text-gray-600 focus:border-teal-500"
+                className="pl-10 h-10 bg-[#020202] border-[#363636] text-white placeholder:text-[#727272] focus:border-[#217aff]"
               />
             </div>
           </div>
@@ -482,8 +482,8 @@ export default function AdminDashboard() {
             {/* Orders Lists */}
             <div className="col-span-2 space-y-6">
               {/* Awaiting Orders */}
-              <Card className="bg-[#111111] border-[#1a1a1a]">
-                <div className="px-5 py-4 border-b border-[#1a1a1a] flex items-center justify-between">
+              <Card className="bg-[#020202] border-[#363636]">
+                <div className="px-5 py-4 border-b border-[#363636] flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
                       <Clock className="w-4 h-4 text-orange-400" />
@@ -494,16 +494,16 @@ export default function AdminDashboard() {
                 </div>
                 <CardContent className="p-0">
                   {filteredAwaitingOrders.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">
+                    <div className="p-8 text-center text-[#727272]">
                       <Clock className="w-12 h-12 mx-auto text-gray-700 mb-3" />
                       <p>No awaiting orders</p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-[#1a1a1a]">
+                    <div className="divide-y divide-[#363636]">
                       {filteredAwaitingOrders.map((order) => (
                         <div
                           key={order.id}
-                          className={`px-5 py-4 cursor-pointer hover:bg-[#151515] transition-colors ${
+                          className={`px-5 py-4 cursor-pointer hover:bg-[rgba(33,122,255,0.06)] transition-colors ${
                             selectedOrder?.id === order.id ? 'bg-orange-500/5 border-l-2 border-orange-500' : ''
                           }`}
                           onClick={() => setSelectedOrder(order)}
@@ -520,12 +520,12 @@ export default function AdminDashboard() {
                                     Awaiting
                                   </Badge>
                                 </div>
-                                <p className="text-sm text-gray-500">{order.email}</p>
+                                <p className="text-sm text-[#727272]">{order.email}</p>
                               </div>
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-white">{(order.inbox_count || 1) * 100} inboxes</p>
-                              <p className="text-xs text-gray-600">{formatTimeAgo(order.created_at)}</p>
+                              <p className="text-xs text-[#727272]">{formatTimeAgo(order.created_at)}</p>
                             </div>
                           </div>
                         </div>
@@ -536,8 +536,8 @@ export default function AdminDashboard() {
               </Card>
 
               {/* Completed Orders */}
-              <Card className="bg-[#111111] border-[#1a1a1a]">
-                <div className="px-5 py-4 border-b border-[#1a1a1a] flex items-center justify-between">
+              <Card className="bg-[#020202] border-[#363636]">
+                <div className="px-5 py-4 border-b border-[#363636] flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
                       <CheckCircle2 className="w-4 h-4 text-green-400" />
@@ -548,16 +548,16 @@ export default function AdminDashboard() {
                 </div>
                 <CardContent className="p-0">
                   {filteredCompletedOrders.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">
+                    <div className="p-8 text-center text-[#727272]">
                       <CheckCircle2 className="w-12 h-12 mx-auto text-gray-700 mb-3" />
                       <p>No completed orders yet</p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-[#1a1a1a]">
+                    <div className="divide-y divide-[#363636]">
                       {filteredCompletedOrders.slice(0, 4).map((order) => (
                         <div
                           key={order.id}
-                          className={`px-5 py-4 cursor-pointer hover:bg-[#151515] transition-colors ${
+                          className={`px-5 py-4 cursor-pointer hover:bg-[rgba(33,122,255,0.06)] transition-colors ${
                             selectedOrder?.id === order.id ? 'bg-green-500/5 border-l-2 border-green-500' : ''
                           }`}
                           onClick={() => setSelectedOrder(order)}
@@ -574,12 +574,12 @@ export default function AdminDashboard() {
                                     Completed
                                   </Badge>
                                 </div>
-                                <p className="text-sm text-gray-500">{order.email}</p>
+                                <p className="text-sm text-[#727272]">{order.email}</p>
                               </div>
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-white">{(order.inbox_count || 1) * 100} inboxes</p>
-                              <p className="text-xs text-gray-600">{formatTimeAgo(order.created_at)}</p>
+                              <p className="text-xs text-[#727272]">{formatTimeAgo(order.created_at)}</p>
                             </div>
                           </div>
                         </div>
@@ -593,43 +593,43 @@ export default function AdminDashboard() {
             {/* Order Detail Panel */}
             <div className="col-span-1">
               {selectedOrder ? (
-                <Card className="bg-[#111111] border-[#1a1a1a] sticky top-6">
-                  <div className="px-5 py-4 border-b border-[#1a1a1a]">
+                <Card className="bg-[#020202] border-[#363636] sticky top-6">
+                  <div className="px-5 py-4 border-b border-[#363636]">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-white">Order Details</h3>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-white">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#727272] hover:text-[#f2f2f2]">
                         <MoreHorizontal className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
                   <CardContent className="p-5 space-y-5">
                     <div className="space-y-3">
-                      <div className="flex justify-between items-center py-2 border-b border-[#1a1a1a]">
-                        <span className="text-sm text-gray-500">Order ID</span>
+                      <div className="flex justify-between items-center py-2 border-b border-[#363636]">
+                        <span className="text-sm text-[#727272]">Order ID</span>
                         <span className="text-sm font-medium text-white font-mono">{getOrderNumber(selectedOrder.id)}</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-[#1a1a1a]">
-                        <span className="text-sm text-gray-500">Customer</span>
+                      <div className="flex justify-between items-center py-2 border-b border-[#363636]">
+                        <span className="text-sm text-[#727272]">Customer</span>
                         <span className="text-sm font-medium text-white">{selectedOrder.email}</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-[#1a1a1a]">
-                        <span className="text-sm text-gray-500">Plan</span>
-                        <Badge className="bg-teal-500/10 text-teal-400 border-teal-500/20">{selectedOrder.plan_name || 'Growth'}</Badge>
+                      <div className="flex justify-between items-center py-2 border-b border-[#363636]">
+                        <span className="text-sm text-[#727272]">Plan</span>
+                        <Badge className="bg-[rgba(33,122,255,0.1)] text-[#217aff] border-[rgba(33,122,255,0.15)]">{selectedOrder.plan_name || 'Growth'}</Badge>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-[#1a1a1a]">
-                        <span className="text-sm text-gray-500">Domains</span>
+                      <div className="flex justify-between items-center py-2 border-b border-[#363636]">
+                        <span className="text-sm text-[#727272]">Domains</span>
                         <span className="text-sm font-medium text-white">{selectedOrder.inbox_count || 1}</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-[#1a1a1a]">
-                        <span className="text-sm text-gray-500">Inboxes</span>
+                      <div className="flex justify-between items-center py-2 border-b border-[#363636]">
+                        <span className="text-sm text-[#727272]">Inboxes</span>
                         <span className="text-sm font-bold text-white">{(selectedOrder.inbox_count || 1) * 100}</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-[#1a1a1a]">
-                        <span className="text-sm text-gray-500">Monthly Value</span>
-                        <span className="text-sm font-bold text-teal-400">${(selectedOrder.inbox_count || 1) * 49}</span>
+                      <div className="flex justify-between items-center py-2 border-b border-[#363636]">
+                        <span className="text-sm text-[#727272]">Monthly Value</span>
+                        <span className="text-sm font-bold text-[#217aff]">${(selectedOrder.inbox_count || 1) * 49}</span>
                       </div>
                       <div className="flex justify-between items-center py-2">
-                        <span className="text-sm text-gray-500">Status</span>
+                        <span className="text-sm text-[#727272]">Status</span>
                         <Badge className={selectedOrder.status === 'fulfilled'
                           ? 'bg-green-500/10 text-green-400 border-green-500/20'
                           : 'bg-orange-500/10 text-orange-400 border-orange-500/20'}>
@@ -639,18 +639,18 @@ export default function AdminDashboard() {
                     </div>
 
                     {selectedOrder.stripe_customer_id && (
-                      <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#1a1a1a]">
+                      <div className="bg-[#020202] rounded-lg p-4 border border-[#363636]">
                         <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3">Stripe Info</h4>
-                        <p className="text-xs text-gray-400 font-mono break-all">Customer: {selectedOrder.stripe_customer_id}</p>
+                        <p className="text-xs text-[#969696] font-mono break-all">Customer: {selectedOrder.stripe_customer_id}</p>
                         {selectedOrder.stripe_subscription_id && (
-                          <p className="text-xs text-gray-400 font-mono break-all mt-1">Sub: {selectedOrder.stripe_subscription_id}</p>
+                          <p className="text-xs text-[#969696] font-mono break-all mt-1">Sub: {selectedOrder.stripe_subscription_id}</p>
                         )}
                       </div>
                     )}
 
                     {selectedOrder.status === 'pending' && (
                       <Button
-                        className="w-full bg-teal-500 hover:bg-teal-600 text-black font-medium"
+                        className="w-full bg-[#217aff] hover:bg-[#1a62cc] text-white font-medium"
                         onClick={async () => {
                           await fetch('/api/admin/orders/complete', {
                             method: 'POST',
@@ -675,10 +675,10 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               ) : (
-                <Card className="bg-[#111111] border-[#1a1a1a]">
+                <Card className="bg-[#020202] border-[#363636]">
                   <CardContent className="p-8 text-center">
                     <Package className="w-12 h-12 mx-auto text-gray-700 mb-3" />
-                    <p className="text-gray-500">Select an order to view details</p>
+                    <p className="text-[#727272]">Select an order to view details</p>
                   </CardContent>
                 </Card>
               )}

@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase';
 
 export async function POST(request) {
   try {
-    const { id, email } = await request.json();
+    const { id, email, name } = await request.json();
 
     if (!id || !email) {
       return NextResponse.json(
@@ -36,6 +36,7 @@ export async function POST(request) {
           .insert({
             id: id,
             email: email,
+            name: name || null,
             created_at: new Date().toISOString(),
           });
 
@@ -47,6 +48,14 @@ export async function POST(request) {
           );
         }
       }
+    }
+
+    // Update name if provided and user already exists
+    if (name) {
+      await supabase
+        .from('users')
+        .update({ name })
+        .eq('id', id);
     }
 
     return NextResponse.json({ success: true });

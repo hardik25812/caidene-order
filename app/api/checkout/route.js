@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request) {
   try {
-    const { email, phone, domains, domainCount } = await request.json();
+    const { email, phone, domains, domainCount, user_id } = await request.json();
 
     if (!email) {
       return NextResponse.json(
@@ -40,6 +40,7 @@ export async function POST(request) {
         domain_count: totalDomains,
         total_amount: (pricePerDomain * totalDomains) / 100,
         status: 'pending_payment',
+        user_id: user_id || null,
         created_at: new Date().toISOString(),
       });
 
@@ -71,6 +72,7 @@ export async function POST(request) {
         domain_count: totalDomains.toString(),
         email: email,
         phone: phone || '',
+        user_id: user_id || '',
         // Store domains as JSON string (Stripe metadata has 500 char limit per value)
         domains_summary: JSON.stringify(domains.slice(0, 3).map(d => d.domain)).substring(0, 500),
       },
