@@ -522,10 +522,6 @@ export default function OrderPage() {
                 <span className="material-symbols-filled text-[1.25rem] text-[#217aff]">schedule</span>
                 48-Hour Setup
               </div>
-              <div className="flex items-center gap-3 py-2 font-body text-[0.8125rem] text-[#969696]">
-                <span className="material-symbols-filled text-[1.25rem] text-[#217aff]">support_agent</span>
-                24/7 Support
-              </div>
             </div>
           </div>
         </div>
